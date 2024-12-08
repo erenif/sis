@@ -1,20 +1,21 @@
 package Entities;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Course {
     private int courseId;
     private String courseName;
     private int quota;
-    private LocalDateTime start_time;
-    private LocalDateTime end_time;
+    private LocalTime start_time;
+    private LocalTime end_time;
     private String syllabus;
 
     public Course() {
     }
 
     public Course(int courseId, String courseName, int quota,
-                  LocalDateTime start_time, LocalDateTime end_time, String syllabus) {
+                  LocalTime start_time, LocalTime end_time, String syllabus) {
         this.courseId = courseId;
         this.courseName = courseName;
         this.quota = quota;
@@ -47,19 +48,19 @@ public class Course {
         this.quota = quota;
     }
 
-    public LocalDateTime getStart_time() {
+    public LocalTime getStart_time() {
         return start_time;
     }
 
-    public void setStart_time(LocalDateTime start_time) {
+    public void setStart_time(LocalTime start_time) {
         this.start_time = start_time;
     }
 
-    public LocalDateTime getEnd_time() {
+    public LocalTime getEnd_time() {
         return end_time;
     }
 
-    public void setEnd_time(LocalDateTime end_time) {
+    public void setEnd_time(LocalTime end_time) {
         this.end_time = end_time;
     }
 

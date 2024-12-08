@@ -2,9 +2,8 @@ CREATE TABLE IF NOT EXISTS Course_Table (
     course_id INT PRIMARY KEY,
     course_name VARCHAR(255) NOT NULL,
     quota INT NOT NULL,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME NOT NULL,
-    schedule DATETIME NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
     syllabus VARCHAR(255) NOT NULL
 );
 
