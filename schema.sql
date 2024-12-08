@@ -36,6 +36,13 @@ CREATE TABLE IF NOT EXISTS Enrollment_Table (
     FOREIGN KEY (course_id) REFERENCES Course_Table(course_id)
 );
 
+CREATE TABLE IF NOT EXISTS Teaching_Table (
+    professor_id INT,
+    course_id INT UNIQUE,
+    PRIMARY KEY (professor_id, course_id),
+    FOREIGN KEY (professor_id) REFERENCES Professor_Table(professor_id),
+    FOREIGN KEY (course_id) REFERENCES Course_Table(course_id)
+);
 
 
 
