@@ -10,11 +10,12 @@ public class Course {
     private LocalTime start_time;
     private LocalTime end_time;
     private String syllabus;
+    private String day;
 
     public Course() {
     }
 
-    public Course(int courseId, String courseName, int quota,
+    public Course(int courseId, String courseName, int quota, String day,
                   LocalTime start_time, LocalTime end_time, String syllabus) {
         this.courseId = courseId;
         this.courseName = courseName;
@@ -22,6 +23,7 @@ public class Course {
         this.start_time = start_time;
         this.end_time = end_time;
         this.syllabus = syllabus;
+        this.day = day;
     }
 
     public int getCourseId() {

@@ -34,10 +34,6 @@ public class Student {
         this.studentName = studentName;
     }
 
-    public ArrayList<Course> getCourseList() {
-        return courseList;
-    }
-
     public void setCourseList(ArrayList<Course> courseList) {
         this.courseList = courseList;
     }
@@ -49,4 +45,22 @@ public class Student {
     public void setGpa(double gpa) {
         this.gpa = gpa;
     }
+
+    public ArrayList<Course> viewCourses() {
+        return courseList;
+    }
+
+    public static void addCourse(int studentId, int courseId) {
+        //Where to store students, professors and admin data?
+    }
+
+    public static void dropCourse(int studentId, int courseId) {
+        //Where to store students, professors and admin data?
+    }
+
+
+
+
+
+
 }
