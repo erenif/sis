@@ -1,9 +1,6 @@
 package Entities;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class Professor {
     private int professorId;
@@ -13,9 +10,9 @@ public class Professor {
     public Professor() {
     }
 
-    public Professor(String professorName, int professorId, List<Course> courseList) {
-        this.professorName = professorName;
+    public Professor(int professorId, String professorName, List<Course> courseList) {
         this.professorId = professorId;
+        this.professorName = professorName;
         this.courseList = courseList;
     }
 
@@ -42,20 +39,5 @@ public class Professor {
     public void setCourseList(List<Course> courseList) {
         this.courseList = courseList;
     }
-
-    public void createCourse(int courseId, String courseName, int quota, int credit, String syllabus, LocalTime startTime, LocalTime endTime, String day) {
-        Course course = new Course(courseId,courseName,quota,day,startTime,endTime,syllabus);
-        courseList.add(courseId,course);
-    }
-
-    public void deleteCourse(int courseId) {
-        courseList.remove(courseId);
-    }
-
-    public void updateCourse(int courseId, String courseName, int quota, int credit, String syllabus, LocalTime startTime, LocalTime endTime, String day) {
-        Course course = courseList.get(courseId);
-        course = new Course(courseId,courseName,quota,day,startTime,endTime,syllabus);
-    }
-
-
 }
+

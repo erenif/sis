@@ -7,15 +7,18 @@ public class Student {
     private String studentName;
     private ArrayList<Course> courseList;
     private double gpa;
+    private int availableCredits;
 
     public Student() {
+        this.courseList = new ArrayList<>();
     }
 
-    public Student(int studentId, String studentName, ArrayList<Course> courseList, double gpa) {
+    public Student(int studentId, String studentName, ArrayList<Course> courseList, double gpa, int availableCredits) {
         this.studentId = studentId;
         this.studentName = studentName;
-        this.courseList = courseList;
+        this.courseList = courseList != null ? courseList : new ArrayList<>();
         this.gpa = gpa;
+        this.availableCredits = availableCredits;
     }
 
     public int getStudentId() {
@@ -34,6 +37,10 @@ public class Student {
         this.studentName = studentName;
     }
 
+    public ArrayList<Course> getCourseList() {
+        return courseList;
+    }
+
     public void setCourseList(ArrayList<Course> courseList) {
         this.courseList = courseList;
     }
@@ -46,21 +53,26 @@ public class Student {
         this.gpa = gpa;
     }
 
-    public ArrayList<Course> viewCourses() {
-        return courseList;
+    public int getAvailableCredits() {
+        return availableCredits;
     }
 
-    public static void addCourse(int studentId, int courseId) {
-        //Where to store students, professors and admin data?
+    public void setAvailableCredits(int availableCredits) {
+        this.availableCredits = availableCredits;
     }
 
-    public static void dropCourse(int studentId, int courseId) {
-        //Where to store students, professors and admin data?
+    public void addCourseLocally(Course course) {
+        if (course != null) {
+            courseList.add(course);
+        }
     }
 
-
-
-
-
-
+    public void dropCourseLocally(Course course) {
+        if (course != null) {
+            courseList.remove(course);
+        }
+    }
 }
+
+
+

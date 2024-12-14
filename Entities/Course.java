@@ -1,14 +1,14 @@
 package Entities;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Course {
     private int courseId;
     private String courseName;
     private int quota;
-    private LocalTime start_time;
-    private LocalTime end_time;
+    private int credits;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String syllabus;
     private String day;
 
@@ -16,14 +16,20 @@ public class Course {
     }
 
     public Course(int courseId, String courseName, int quota, String day,
-                  LocalTime start_time, LocalTime end_time, String syllabus) {
+                  LocalTime startTime, LocalTime endTime, String syllabus) {
         this.courseId = courseId;
         this.courseName = courseName;
         this.quota = quota;
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.syllabus = syllabus;
         this.day = day;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.syllabus = syllabus;
+    }
+
+    public Course(int courseId, String courseName, int quota, String day,
+                  LocalTime startTime, LocalTime endTime, String syllabus, int credits) {
+        this(courseId, courseName, quota, day, startTime, endTime, syllabus);
+        this.credits = credits;
     }
 
     public int getCourseId() {
@@ -50,20 +56,28 @@ public class Course {
         this.quota = quota;
     }
 
-    public LocalTime getStart_time() {
-        return start_time;
+    public int getCredits() {
+        return credits;
     }
 
-    public void setStart_time(LocalTime start_time) {
-        this.start_time = start_time;
+    public void setCredits(int credits) {
+        this.credits = credits;
     }
 
-    public LocalTime getEnd_time() {
-        return end_time;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setEnd_time(LocalTime end_time) {
-        this.end_time = end_time;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getSyllabus() {
@@ -72,5 +86,13 @@ public class Course {
 
     public void setSyllabus(String syllabus) {
         this.syllabus = syllabus;
+    }
+
+    public String getDay() {
+        return day;
+    }
+
+    public void setDay(String day) {
+        this.day = day;
     }
 }
