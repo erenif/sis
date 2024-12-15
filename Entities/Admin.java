@@ -27,4 +27,10 @@ public class Admin {
     public void setAdminName(String adminName) {
         this.adminName = adminName;
     }
+
+    public void createStudent(int studentId, String studentName) {}
+
+    public void deleteStudent(int studentId) {}
+
+    public void updateStudent(int studentId, String studentName) {}
 }

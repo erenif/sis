@@ -1,43 +1,66 @@
 package Entities;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Professor {
-    private int professorId;
-    private String professorName;
-    private List<Course> courseList;
+public class Professor extends User {
+    private ArrayList<Course> coursesTaught;
 
-    public Professor() {
+    public Professor(int userID, String userName) {
+        super(userID,userName);
+        this.coursesTaught = new ArrayList<>();
     }
 
-    public Professor(int professorId, String professorName, List<Course> courseList) {
-        this.professorId = professorId;
-        this.professorName = professorName;
-        this.courseList = courseList;
+    public ArrayList<Course> getCoursesTaught() {
+        return coursesTaught;
     }
 
-    public int getProfessorId() {
-        return professorId;
+    public void setCourseList(ArrayList<Course> coursesTaught) {
+        this.coursesTaught = coursesTaught;
     }
 
-    public void setProfessorId(int professorId) {
-        this.professorId = professorId;
+    public void createCourse(int courseId, String courseName, int credits, int quota, String syllabus, String schedule) {
+        Course newCourse = new Course(courseId, courseName, quota, credits, schedule, syllabus);
+        coursesTaught.add(newCourse);
+        System.out.println("Course " + courseName + " created successfully by Professor " + getUserName());
     }
 
-    public String getProfessorName() {
-        return professorName;
+    public boolean deleteCourse(int courseId) {
+        for (Course course : coursesTaught) {
+            if (course.getCourseId() == courseId) {
+                coursesTaught.remove(course);
+                System.out.println("Course " + course.getCourseName() + " deleted successfully");
+                return true;
+            }
+        }
+        System.out.println("Course with ID " + courseId + " not found.");
+        return false;
     }
-
-    public void setProfessorName(String professorName) {
-        this.professorName = professorName;
+    public boolean updateCourse(int courseId, String courseName, int credits, int quota, String syllabus, String schedule) {
+        for (Course course : coursesTaught) {
+            if (course.getCourseId() == courseId) {
+                course.setCourseName(courseName);
+                course.setCredits(credits);
+                course.setQuota(quota);
+                course.setSyllabus(syllabus);
+                course.setSchedule(schedule);
+                System.out.println("Course " + courseName + " updated successfully");
+                return true;
+            }
+        }
+        System.out.println("Course with ID " + courseId + " not found.");
+        return false;
     }
-
-    public List<Course> getCourseList() {
-        return courseList;
-    }
-
-    public void setCourseList(List<Course> courseList) {
-        this.courseList = courseList;
+    public boolean enterGrade(int courseId, int studentId, String grade) {
+        for (Course course : coursesTaught) {
+            if (course.getCourseId() == courseId) {
+                course.assignGrade(studentId, grade);
+                //Implement here the Student class's completeCourse method.
+                return true;
+            }
+        }
+        return false;
     }
 }
 
