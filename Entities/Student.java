@@ -1,29 +1,31 @@
 package Entities;
 
+import Entities.Enums.LetterGrades;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Student extends User{
-    private ArrayList<Course> coursesEnrolled;
-    private ArrayList<Course> completedCourses;
+    private ArrayList<Course> coursesEnrolled; //Course'ların saatlerine bu arraylistten ulaşacağız.
     private double gpa;
-    private HashMap<String, ArrayList<Course>> gpaBySemester;
     private int availableCredits;
-    private HashMap<String, HashMap<Integer, Course>> schedule;
+    private HashMap<Course, LetterGrades> courseLetterGradesHashMap;
 
     public Student(int userID, String UserName) {
         super(userID, UserName);
         this.coursesEnrolled = new ArrayList<>();
-        this.completedCourses = new ArrayList<>();
-        this.gpaBySemester = new HashMap<>();
+        this.courseLetterGradesHashMap = new HashMap<>();
         this.gpa = 0.0;
         this.availableCredits = 30;
-        this.schedule = new HashMap<>();
+    }
 
-        String[] weekdays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
-        for (String weekday : weekdays) {
-            schedule.put(weekday, new HashMap<>());
-        }
+    public Student(int userID, String userName, ArrayList<Course> coursesEnrolled, double gpa,
+                   int availableCredits, HashMap<Course, LetterGrades> courseLetterGradesHashMap) {
+        super(userID, userName);
+        this.coursesEnrolled = coursesEnrolled;
+        this.gpa = gpa;
+        this.availableCredits = availableCredits;
+        this.courseLetterGradesHashMap = courseLetterGradesHashMap;
     }
 
     public ArrayList<Course> getCourseList() {
@@ -50,6 +52,7 @@ public class Student extends User{
         this.availableCredits = availableCredits;
     }
 
+
     public boolean addCourse(Course course) {
         if (coursesEnrolled.contains(course)) {
             System.out.println("Already enrolled!");
@@ -60,62 +63,54 @@ public class Student extends User{
         } else if (course == null) {
             System.out.println("Course is null!");
             return false;
-        } else if (updateSchedule(course) == false) {
-            return false;
         } else {
             coursesEnrolled.add(course);
-            updateSchedule(course);
             course.enrollStudent(getUserID());
+            courseLetterGradesHashMap.put(course, null);
+            setAvailableCredits(getAvailableCredits() - course.getCredits());
+            course.setQuota(course.getQuota() - 1);
             System.out.println("Course successfully added!");
             return true;
         }
     }
 
     public void dropCourse(Course course) {
-        if (course != null) {
+        if (course != null && coursesEnrolled.contains(course)) {
             coursesEnrolled.remove(course);
-            course.dropStudent(getUserID());
+            setAvailableCredits(getAvailableCredits() + course.getCredits());
+            courseLetterGradesHashMap.remove(course);
             System.out.println("Course successfully dropped!");
+        } else {
+            System.out.println("Student has not enrolled into the specified course");
         }
     }
 
-    public boolean updateSchedule(Course course) {
-        String schedule = course.getSchedule(); // Schedule format: Wednesday, 11.00-12.00
-        String[] parts = schedule.split(", ");
-        String day = parts[0];
-        String[] time = parts[1].split("-");
-        int startHour = Integer.parseInt(time[0].split("\\.")[0]);
-        int endHour = Integer.parseInt(time[1].split("\\.")[0]);
+    public LetterGrades viewLetterGrade(Course course) {
+        return courseLetterGradesHashMap.get(course);
+    }
 
-        HashMap<Integer, Course> daySchedule = this.schedule.get(day);
-        for (int hour = startHour; hour < endHour; hour++) {
-            if (daySchedule.containsKey(hour)) {
-                System.out.println(course.getCourseName() + " overlaps with " + daySchedule.get(hour).getCourseName());
-                return false;
+    //Özyeğin'de kullanılan ortalama hesaplama sistemi implementasyonu
+    public double viewGPA(){
+        double totalGpa = 0.0;
+        int totalCreditsTaken = 0;
+        for(Course course: coursesEnrolled){
+            LetterGrades letterGrade = courseLetterGradesHashMap.get(course);
+            totalCreditsTaken += course.getCredits();
+            switch (letterGrade){
+                case A -> totalGpa += 4.0;
+                case A_MINUS -> totalGpa += 3.6;
+                case B_PLUS -> totalGpa += 3.3;
+                case B -> totalGpa += 3.0;
+                case B_MINUS -> totalGpa += 2.7;
+                case C_PLUS -> totalGpa += 2.3;
+                case C -> totalGpa += 2.0;
+                case C_MINUS -> totalGpa += 1.7;
+                case D_PLUS -> totalGpa += 1.3;
+                case D -> totalGpa += 1.0;
+                case null, default -> totalGpa += 0;
             }
         }
-        for (int hour = startHour; hour < endHour; hour++) {
-            daySchedule.put(hour, course);
-        }
-        System.out.println(course.getCourseName() + " successfully added into schedule.");
-        return true;
-    }
-
-    public boolean completeCourse(Course course, String grade) {
-        if (!grade.equalsIgnoreCase("F")) {
-            completedCourses.add(course);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public String viewLetterGrade(Course course) {
-
-    }
-
-    public double viewGPA(){
-
+        return totalGpa / totalCreditsTaken;
     }
 
 

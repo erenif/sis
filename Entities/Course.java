@@ -1,30 +1,30 @@
 package Entities;
-import java.util.HashMap;
-import java.util.List;
+import Entities.Enums.WeekDays;
+
+import java.time.LocalTime;
 
 public class Course {
     private int courseId;
     private String courseName;
     private int quota;
     private int credits;
-    private String schedule;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private WeekDays course_day;
     private String syllabus;
-    private HashMap<Integer, String> studentGrades;
-    private List<Course> prerequisites;
-    private
 
 
-    public Course() {
-    }
-
-    public Course(int courseId, String courseName, int quota, int credits,  String schedule, String syllabus) {
+    public Course(int courseId, String courseName, int quota, int credits,
+                  LocalTime startTime, LocalTime endTime, WeekDays course_day,
+                  String syllabus) {
         this.courseId = courseId;
         this.courseName = courseName;
         this.quota = quota;
         this.credits = credits;
-        this.schedule = schedule;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.course_day = course_day;
         this.syllabus = syllabus;
-        this.studentGrades = new HashMap<>();
     }
 
     public int getCourseId() {
@@ -59,9 +59,29 @@ public class Course {
         this.credits = credits;
     }
 
-    public String getSchedule() {return schedule;}
+    public LocalTime getStartTime() {
+        return startTime;
+    }
 
-    public void setSchedule(String schedule) {this.schedule = schedule;}
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public WeekDays getCourse_day() {
+        return course_day;
+    }
+
+    public void setCourse_day(WeekDays course_day) {
+        this.course_day = course_day;
+    }
 
     public String getSyllabus() {
         return syllabus;
@@ -69,22 +89,6 @@ public class Course {
 
     public void setSyllabus(String syllabus) {
         this.syllabus = syllabus;
-    }
-
-    public List<Course> getPrerequisites() {
-        return prerequisites;
-    }
-
-    public void addPrerequisite(Course course) {
-        prerequisites.add(course);
-    }
-
-    public boolean hasPrerequisite(Course course) {
-        return prerequisites.contains(course);
-    }
-
-    public void removePrerequisite(Course course) {
-        prerequisites.remove(course);
     }
 
     public boolean enrollStudent(int studentId) {
@@ -97,26 +101,4 @@ public class Course {
             return false;
         }
     }
-
-    public boolean dropStudent(int studentId) {
-        if (studentGrades.containsKey(studentId)) {
-            quota++;
-            studentGrades.remove(studentId); // Remove any grade entry for the student
-            System.out.println("Student with ID " + studentId + " successfully dropped.");
-            return true;
-        } else {
-            System.out.println("Student with ID " + studentId + " is not enrolled in " + courseName);
-            return false;
-        }
-    }
-
-    public void assignGrade(int studentId, String letterGrade) {
-        if (studentGrades.containsKey(studentId)) {
-            studentGrades.put(studentId, letterGrade);
-            System.out.println("Grade " + letterGrade + " assigned to student with ID " + studentId + " for " + courseName);
-        } else {
-            System.out.println("Student with ID " + studentId + " is not enrolled in " + courseName);
-        }
-    }
-
 }
