@@ -31,12 +31,12 @@ public class ProfessorDAO extends DAO.AbstractDB {
 
     public void addProfessor(Professor professor) throws SQLException {
         String query = "INSERT INTO Professor_Table (professor_id, professor_name) VALUES (?, ?)";
-        executeUpdate(query, professor.getProfessorId(), professor.getProfessorName());
+        executeUpdate(query, professor.getUserID(), professor.getUserName());
     }
 
     public void updateProfessor(Professor professor) throws SQLException {
         String query = "UPDATE Professor_Table SET professor_name = ? WHERE professor_id = ?";
-        executeUpdate(query, professor.getProfessorName(), professor.getProfessorId());
+        executeUpdate(query, professor.getUserName(), professor.getUserID());
     }
 
     public void deleteProfessor(int professorId) throws SQLException {
