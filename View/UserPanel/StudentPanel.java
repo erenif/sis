@@ -284,12 +284,9 @@ public class StudentPanel extends JFrame {
     }
 
     // Test main
-    /*
     public static void main(String[] args) {
         // Mock a student
         Student mockStudent = new Student(101, "John Doe");
         SwingUtilities.invokeLater(() -> new StudentPanel(mockStudent));
     }
-
-     */
 }
