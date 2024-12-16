@@ -61,15 +61,10 @@ public class Professor extends User {
         System.out.println("Course with ID " + courseId + " not found.");
         return false;
     }
+
+    //TODO: Enter Grade implementation is missing
     public boolean enterGrade(int courseId, int studentId, String grade) {
-        for (Course course : coursesTaught) {
-            if (course.getCourseId() == courseId) {
-                course.assignGrade(studentId, grade);
-                //Implement here the Student class's completeCourse method.
-                return true;
-            }
-        }
-        return false;
+        return true;
     }
 }
 
