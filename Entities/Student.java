@@ -26,6 +26,25 @@ public class Student extends User{
         }
     }
 
+    public Student(int userID, String userName, ArrayList<Course> coursesEnrolled, double gpa, int availableCredits) {
+        super(userID, userName);
+        this.coursesEnrolled = coursesEnrolled;
+        this.completedCourses = new ArrayList<>();
+        this.gpaBySemester = new HashMap<>();
+        this.gpa = gpa;
+        this.availableCredits = availableCredits;
+        this.schedule = new HashMap<>();
+
+        String[] weekdays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        for (String weekday : weekdays) {
+            schedule.put(weekday, new HashMap<>());
+        }
+
+        for (Course c : coursesEnrolled) {
+            updateSchedule(c);
+        }
+    }
+
     public ArrayList<Course> getCourseList() {
         return coursesEnrolled;
     }
@@ -112,10 +131,12 @@ public class Student extends User{
 
     public String viewLetterGrade(Course course) {
 
+        return null;
     }
 
     public double viewGPA(){
 
+        return 0.0;
     }
 
 

@@ -11,7 +11,7 @@ public class Course {
     private String syllabus;
     private HashMap<Integer, String> studentGrades;
     private List<Course> prerequisites;
-    private
+    ////private
 
 
     public Course() {

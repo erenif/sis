@@ -12,6 +12,15 @@ public class Professor extends User {
         this.coursesTaught = new ArrayList<>();
     }
 
+    public Professor(int userID, String userName, List<Course> coursesTaught) {
+        super(userID, userName);
+        this.coursesTaught = new ArrayList<>(coursesTaught);
+    }
+
+    public void setCourseList(List<Course> coursesTaught) {
+        this.coursesTaught = new ArrayList<>(coursesTaught);
+    }
+
     public ArrayList<Course> getCoursesTaught() {
         return coursesTaught;
     }
