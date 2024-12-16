@@ -85,8 +85,7 @@ public class LoginPanel extends JPanel {
                 if (role.equals("Admin")) {
                     // Hardcoded admin credentials: admin / admin123
                     if ("admin".equals(username) && "admin123".equals(password)) {
-                        Admin admin = new Admin(1, "Admin User");
-                        openAdminPanel(admin);
+                        openAdminPanel();
                     } else {
                         JOptionPane.showMessageDialog(null, "Login failed. Invalid admin credentials.");
                     }
@@ -119,10 +118,10 @@ public class LoginPanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 
-    // Open admin panel with an Admin object
-    private void openAdminPanel(Admin admin) {
+    // Open admin panel
+    private void openAdminPanel() {
         parentFrame.dispose(); // Close the login frame
-        new AdminPanel(admin);
+        new AdminPanel();
     }
 
     // Open professor panel with a Professor object

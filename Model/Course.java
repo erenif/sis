@@ -119,4 +119,8 @@ public class Course {
         }
     }
 
+    public String toString() {
+        return courseId + ": " + courseName;
+    }
+
 }
