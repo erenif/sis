@@ -51,9 +51,58 @@ class LoginPanel extends JPanel {
         userDataPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
         userPanel.add(userDataPanel);
 
+        // ENTER BUTTON
+        JButton enterButton = new JButton("Login");
+        enterButton.setPreferredSize(new Dimension(180, 40));
+        enterButton.setBackground(new Color(255, 255, 255));
+        enterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        userPanel.add(enterButton);
 
+        // ADD USER PANEL TO FRAME USING GRIDBAG LAYOUT
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(10, 10, 10, 10); // Margins around the panel
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(userPanel, gbc);
+
+        enterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                String role = (String) roleSelector.getSelectedItem();
+                // Perform login logic here
+                if (role.equals("Admin") && username.equals("admin") && password.equals("admin123")) {
+                    parentFrame.dispose(); // Close the login frame
+                    JFrame adminFrame = new JFrame("Admin Panel");
+                    adminFrame.setSize(400, 300);
+                    adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    adminFrame.add(new JLabel("Welcome to Admin Panel", SwingConstants.CENTER));
+                    adminFrame.setVisible(true);
+                } else if (role.equals("User") && username.equals("user") && password.equals("user123")) {
+                    parentFrame.dispose(); // Close the login frame
+                    JFrame userFrame = new JFrame("User Panel");
+                    userFrame.setSize(400, 300);
+                    userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    userFrame.add(new JLabel("Welcome to User Panel", SwingConstants.CENTER));
+                    userFrame.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Login failed. Please check your credentials and role.");
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        // Draw background color
+        g.setColor(new Color(240, 240, 240));
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 }
+
 
 
 
