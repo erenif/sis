@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.List;
 
 public class ProfessorPanel extends JFrame {
@@ -18,6 +17,7 @@ public class ProfessorPanel extends JFrame {
     private JButton openCourseButton;
     private JButton editCourseButton;
     private JButton deleteCourseButton;
+    private JButton createCourseButton; // New button to add courses
 
     // UI components for displaying students in a selected course
     private JTable studentsTable;
@@ -55,19 +55,20 @@ public class ProfessorPanel extends JFrame {
 
         // Load courses from professor's list
         List<Course> courses = professor.getCoursesTaught();
-        // In a real scenario, if needed, you'd fetch from DAO here and update professor's courses before populating combo.
 
         courseComboBox = new JComboBox<>(courses.toArray(new Course[0]));
         coursePanel.add(courseComboBox, BorderLayout.CENTER);
 
-        JPanel courseActionsPanel = new JPanel(new GridLayout(3,1,5,5));
+        JPanel courseActionsPanel = new JPanel(new GridLayout(4,1,5,5));
         openCourseButton = new JButton("Open Course");
         editCourseButton = new JButton("Edit Course");
         deleteCourseButton = new JButton("Delete Course");
+        createCourseButton = new JButton("Create Course"); // New button
 
         courseActionsPanel.add(openCourseButton);
         courseActionsPanel.add(editCourseButton);
         courseActionsPanel.add(deleteCourseButton);
+        courseActionsPanel.add(createCourseButton);
 
         coursePanel.add(courseActionsPanel, BorderLayout.SOUTH);
 
@@ -98,7 +99,7 @@ public class ProfessorPanel extends JFrame {
 
         mainSplit.setRightComponent(studentsPanel);
 
-        // Action Listeners (No DAO logic, just comments indicating where it would be)
+        // Action Listeners (No DAO logic, just comments)
         openCourseButton.addActionListener(e -> {
             Course selectedCourse = (Course) courseComboBox.getSelectedItem();
             if (selectedCourse == null) {
@@ -109,15 +110,8 @@ public class ProfessorPanel extends JFrame {
             // Clear table before loading
             studentsTableModel.setRowCount(0);
 
-            // TODO: DAO logic here to fetch students enrolled in selectedCourse
-            // Example:
-            // List<Student> enrolledStudents = studentDAO.getStudentsByCourse(selectedCourse.getCourseId());
-            // for (Student s : enrolledStudents) {
-            //     String grade = ... // get from course or enrollment info
-            //     studentsTableModel.addRow(new Object[]{s.getUserID(), s.getUserName(), grade});
-            // }
-
-            // Test
+            // TODO: DAO logic to fetch students enrolled in selectedCourse
+            // Mock data:
             Object[][] mockStudents = {
                     {101, "Student A", "B"},
                     {102, "Student B", "A"},
@@ -139,8 +133,7 @@ public class ProfessorPanel extends JFrame {
             String newName = JOptionPane.showInputDialog(this, "Enter new course name:", selectedCourse.getCourseName());
             if (newName != null && !newName.trim().isEmpty()) {
                 selectedCourse.setCourseName(newName);
-                // TODO: DAO logic here to update the course in the database
-                // courseDAO.updateCourse(selectedCourse);
+                // TODO: DAO logic to update the course in the DB
                 courseComboBox.repaint();
             }
         });
@@ -156,8 +149,6 @@ public class ProfessorPanel extends JFrame {
                     "Confirm Delete", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.YES_OPTION) {
                 // TODO: DAO logic to delete course from DB
-                // courseDAO.deleteCourse(selectedCourse.getCourseId());
-
                 professor.getCoursesTaught().remove(selectedCourse);
                 courseComboBox.removeItem(selectedCourse);
                 JOptionPane.showMessageDialog(this, "Course deleted successfully.");
@@ -177,20 +168,67 @@ public class ProfessorPanel extends JFrame {
                 return;
             }
 
-            // Validate grade, if needed
-            // TODO: DAO logic to save the assigned grade to DB
-            // For example, course.assignGrade(studentId, grade);
-            // Then student.completeCourse(course, grade) if appropriate.
-
+            // TODO: DAO logic to assign grade to the student in the DB
             studentsTableModel.setValueAt(grade.toUpperCase(), selectedRow, 2);
             JOptionPane.showMessageDialog(this, "Grade assigned successfully.");
+        });
+
+        createCourseButton.addActionListener(e -> {
+            // Show a dialog to input new course details
+            JPanel inputPanel = new JPanel(new GridLayout(5,2,5,5));
+
+            JTextField courseIdField = new JTextField();
+            JTextField courseNameField = new JTextField();
+            JTextField creditsField = new JTextField();
+            JTextField quotaField = new JTextField();
+            JTextField scheduleField = new JTextField(); // format: "Wednesday, 11.00-12.00"
+            JTextField syllabusField = new JTextField();
+
+            inputPanel.add(new JLabel("Course ID:"));
+            inputPanel.add(courseIdField);
+            inputPanel.add(new JLabel("Course Name:"));
+            inputPanel.add(courseNameField);
+            inputPanel.add(new JLabel("Credits:"));
+            inputPanel.add(creditsField);
+            inputPanel.add(new JLabel("Quota:"));
+            inputPanel.add(quotaField);
+            inputPanel.add(new JLabel("Schedule:"));
+            inputPanel.add(scheduleField);
+            inputPanel.add(new JLabel("Syllabus:"));
+            inputPanel.add(syllabusField);
+
+            int result = JOptionPane.showConfirmDialog(this, inputPanel, "Create New Course", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    int courseId = Integer.parseInt(courseIdField.getText().trim());
+                    String courseName = courseNameField.getText().trim();
+                    int credits = Integer.parseInt(creditsField.getText().trim());
+                    int quota = Integer.parseInt(quotaField.getText().trim());
+                    String schedule = scheduleField.getText().trim();
+                    String syllabus = syllabusField.getText().trim();
+
+                    if (!courseName.isEmpty() && !schedule.isEmpty() && !syllabus.isEmpty()) {
+                        // Create new course in the model
+                        Course newCourse = new Course(courseId, courseName, quota, credits, schedule, syllabus);
+                        professor.getCoursesTaught().add(newCourse);
+                        courseComboBox.addItem(newCourse);
+
+                        // TODO: DAO logic to add course to DB and link to professor
+                        JOptionPane.showMessageDialog(this, "Course created successfully!");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Please fill all fields properly.");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid numeric input for ID, credits, or quota.");
+                }
+            }
         });
 
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    // For testing purposes (no DAO, no logic)
+    // For testing purposes
     public static void main(String[] args) {
         // Mock a professor with some courses
         Professor mockProfessor = new Professor(1, "Dr. Smith");
