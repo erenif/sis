@@ -1,12 +1,18 @@
 package View;
 
+import Model.Admin;
+import Model.Professor;
+import Model.Student;
+import View.UserPanel.ProfessorPanel;
+import View.UserPanel.StudentPanel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class LoginPanel extends JPanel {
+public class LoginPanel extends JPanel {
     private JFrame parentFrame;
     private JTextField usernameField;
     private JPasswordField passwordField;
@@ -30,7 +36,8 @@ class LoginPanel extends JPanel {
         // ROLE SELECTOR
         JPanel rolePanel = new JPanel(new FlowLayout());
         JLabel roleLabel = new JLabel("Select Role:");
-        roleSelector = new JComboBox<>(new String[]{"Admin", "User"});
+        // Now we provide 3 roles: Admin, Professor, Student
+        roleSelector = new JComboBox<>(new String[]{"Admin", "Professor", "Student"});
         rolePanel.add(roleLabel);
         rolePanel.add(roleSelector);
         rolePanel.setOpaque(false);
@@ -69,26 +76,36 @@ class LoginPanel extends JPanel {
         enterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
+                String username = usernameField.getText().trim();
                 String password = new String(passwordField.getPassword());
                 String role = (String) roleSelector.getSelectedItem();
-                // Perform login logic here
-                if (role.equals("Admin") && username.equals("admin") && password.equals("admin123")) {
-                    parentFrame.dispose(); // Close the login frame
-                    JFrame adminFrame = new JFrame("Admin Panel");
-                    adminFrame.setSize(400, 300);
-                    adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    adminFrame.add(new JLabel("Welcome to Admin Panel", SwingConstants.CENTER));
-                    adminFrame.setVisible(true);
-                } else if (role.equals("User") && username.equals("user") && password.equals("user123")) {
-                    parentFrame.dispose(); // Close the login frame
-                    JFrame userFrame = new JFrame("User Panel");
-                    userFrame.setSize(400, 300);
-                    userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    userFrame.add(new JLabel("Welcome to User Panel", SwingConstants.CENTER));
-                    userFrame.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Login failed. Please check your credentials and role.");
+
+                // For demonstration, we check hardcoded credentials.
+                // Replace this logic with actual DAO calls and object retrieval.
+                if (role.equals("Admin")) {
+                    // Hardcoded admin credentials: admin / admin123
+                    if ("admin".equals(username) && "admin123".equals(password)) {
+                        Admin admin = new Admin(1, "Admin User");
+                        openAdminPanel(admin);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Login failed. Invalid admin credentials.");
+                    }
+                } else if (role.equals("Professor")) {
+                    // Hardcoded professor credentials: prof / prof123
+                    if ("prof".equals(username) && "prof123".equals(password)) {
+                        Professor professor = new Professor(2, "Professor User");
+                        openProfessorPanel(professor);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Login failed. Invalid professor credentials.");
+                    }
+                } else if (role.equals("Student")) {
+                    // Hardcoded student credentials: stud / stud123
+                    if ("stud".equals(username) && "stud123".equals(password)) {
+                        Student student = new Student(3, "Student User");
+                        openStudentPanel(student);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Login failed. Invalid student credentials.");
+                    }
                 }
             }
         });
@@ -101,8 +118,25 @@ class LoginPanel extends JPanel {
         g.setColor(new Color(240, 240, 240));
         g.fillRect(0, 0, getWidth(), getHeight());
     }
-}
 
+    // Open admin panel with an Admin object
+    private void openAdminPanel(Admin admin) {
+        parentFrame.dispose(); // Close the login frame
+        new AdminPanel(admin);
+    }
+
+    // Open professor panel with a Professor object
+    private void openProfessorPanel(Professor professor) {
+        parentFrame.dispose();
+        new ProfessorPanel(professor);
+    }
+
+    // Open student panel with a Student object
+    private void openStudentPanel(Student student) {
+        parentFrame.dispose();
+        new StudentPanel(student);
+    }
+}
 
 
 
