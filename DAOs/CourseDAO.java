@@ -1,11 +1,10 @@
 package DAOs;
 
-import Entities.Course;
+import Model.Course;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 

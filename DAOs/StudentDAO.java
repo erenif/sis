@@ -1,8 +1,7 @@
 package DAOs;
 
-import Entities.Student;
-import Entities.Course;
-import Utils.DatabaseConnection;
+import Model.Student;
+import Model.Course;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

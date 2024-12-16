@@ -1,7 +1,7 @@
 package DAOs;
 
-import Entities.Professor;
-import Entities.Course;
+import Model.Professor;
+import Model.Course;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
