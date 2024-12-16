@@ -1,7 +1,9 @@
 package DAOs;
 
-import Model.Professor;
-import Model.Course;
+import Entities.Enums.WeekDays;
+import Entities.Professor;
+import Entities.Course;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfessorDAO extends DAO.AbstractDB {
+public class ProfessorDAO extends DAOs.AbstractDB {
 
     public ProfessorDAO(Connection connection) {
         super(connection);
@@ -69,7 +71,7 @@ public class ProfessorDAO extends DAO.AbstractDB {
         executeUpdate(query, courseId);
     }
 
-    public List<Course> getCoursesByProfessor(int professorId) throws SQLException {
+    public ArrayList<Course> getCoursesByProfessor(int professorId) throws SQLException {
         String query = """
             SELECT c.course_id, c.course_name, c.quota, c.start_time, c.end_time, c.syllabus, c.day_of_week
             FROM Course_Table c
@@ -78,15 +80,16 @@ public class ProfessorDAO extends DAO.AbstractDB {
         """;
         ResultSet resultSet = executeQuery(query, professorId);
 
-        List<Course> courses = new ArrayList<>();
+        ArrayList<Course> courses = new ArrayList<>();
         while (resultSet.next()) {
             courses.add(new Course(
                     resultSet.getInt("course_id"),
                     resultSet.getString("course_name"),
                     resultSet.getInt("quota"),
-                    resultSet.getString("day_of_week"),
+                    resultSet.getInt("credits"),
                     resultSet.getTime("start_time").toLocalTime(),
                     resultSet.getTime("end_time").toLocalTime(),
+                    WeekDays.valueOf(resultSet.getString("course_day")),
                     resultSet.getString("syllabus")
             ));
         }

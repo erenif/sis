@@ -1,6 +1,7 @@
 package DAOs;
 
-import Model.Course;
+import Entities.Course;
+import Entities.Enums.WeekDays;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -8,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseDAO extends DAO.AbstractDB {
+public class CourseDAO extends DAOs.AbstractDB {
 
     public CourseDAO(Connection connection) {
         super(connection);
@@ -19,15 +20,17 @@ public class CourseDAO extends DAO.AbstractDB {
         ResultSet resultSet = executeQuery(query, courseId);
 
         if (resultSet.next()) {
-            return new Course(
+            Course course = new Course(
                     resultSet.getInt("course_id"),
                     resultSet.getString("course_name"),
                     resultSet.getInt("quota"),
-                    resultSet.getString("day_of_week"),
+                    resultSet.getInt("credits"),
                     resultSet.getTime("start_time").toLocalTime(),
                     resultSet.getTime("end_time").toLocalTime(),
+                    WeekDays.valueOf(resultSet.getString("course_day")),
                     resultSet.getString("syllabus")
             );
+            return course;
         }
         return null;
     }
@@ -59,9 +62,10 @@ public class CourseDAO extends DAO.AbstractDB {
                     resultSet.getInt("course_id"),
                     resultSet.getString("course_name"),
                     resultSet.getInt("quota"),
-                    resultSet.getString("day_of_week"),
+                    resultSet.getInt("credits"),
                     resultSet.getTime("start_time").toLocalTime(),
                     resultSet.getTime("end_time").toLocalTime(),
+                    WeekDays.valueOf(resultSet.getString("course_day")),
                     resultSet.getString("syllabus")
             ));
         }
@@ -78,9 +82,10 @@ public class CourseDAO extends DAO.AbstractDB {
                     resultSet.getInt("course_id"),
                     resultSet.getString("course_name"),
                     resultSet.getInt("quota"),
-                    resultSet.getString("day_of_week"),
+                    resultSet.getInt("credits"),
                     resultSet.getTime("start_time").toLocalTime(),
                     resultSet.getTime("end_time").toLocalTime(),
+                    WeekDays.valueOf(resultSet.getString("course_day")),
                     resultSet.getString("syllabus")
             ));
         }
