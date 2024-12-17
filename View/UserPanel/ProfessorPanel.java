@@ -1,7 +1,7 @@
 package View.UserPanel;
 
-import Model.Course;
-import Model.Professor;
+import Entities.Course;
+import Entities.Professor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

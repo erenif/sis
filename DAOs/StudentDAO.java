@@ -1,8 +1,8 @@
 package DAOs;
 
 import Entities.Course;
-import Entities.Enums.LetterGrades;
-import Entities.Enums.WeekDays;
+import Entities.Enum.LetterGrades;
+import Entities.Enum.WeekDays;
 import Entities.Student;
 
 import java.sql.Connection;

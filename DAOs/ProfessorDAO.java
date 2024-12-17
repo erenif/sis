@@ -1,6 +1,6 @@
 package DAOs;
 
-import Entities.Enums.WeekDays;
+import Entities.Enum.WeekDays;
 import Entities.Professor;
 import Entities.Course;
 

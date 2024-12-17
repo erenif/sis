@@ -1,4 +1,4 @@
-package Entities.Enums;
+package Entities.Enum;
 
 public enum LetterGrades {
     A,

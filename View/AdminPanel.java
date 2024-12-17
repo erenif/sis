@@ -1,14 +1,10 @@
 package View;
 
-import Model.Admin;
-import Model.Student;
-import Model.Professor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
 
 public class AdminPanel extends JFrame {
 

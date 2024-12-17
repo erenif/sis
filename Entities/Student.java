@@ -1,6 +1,6 @@
 package Entities;
 
-import Entities.Enums.LetterGrades;
+import Entities.Enum.LetterGrades;
 
 import java.util.ArrayList;
 import java.util.HashMap;

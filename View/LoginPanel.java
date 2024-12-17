@@ -1,8 +1,7 @@
 package View;
 
-import Model.Admin;
-import Model.Professor;
-import Model.Student;
+import Entities.Professor;
+import Entities.Student;
 import View.UserPanel.ProfessorPanel;
 import View.UserPanel.StudentPanel;
 

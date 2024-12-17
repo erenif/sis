@@ -1,7 +1,9 @@
 package Entities;
-import Entities.Enums.WeekDays;
+
+import Entities.Enum.WeekDays;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 public class Course {
     private int courseId;
@@ -12,11 +14,12 @@ public class Course {
     private LocalTime endTime;
     private WeekDays course_day;
     private String syllabus;
+    private ArrayList<Course> prerequisiteCourse;
 
 
     public Course(int courseId, String courseName, int quota, int credits,
                   LocalTime startTime, LocalTime endTime, WeekDays course_day,
-                  String syllabus) {
+                  String syllabus, ArrayList<Course> prerequisiteCourse) {
         this.courseId = courseId;
         this.courseName = courseName;
         this.quota = quota;
@@ -25,6 +28,7 @@ public class Course {
         this.endTime = endTime;
         this.course_day = course_day;
         this.syllabus = syllabus;
+        this.prerequisiteCourse = prerequisiteCourse;
     }
 
     public int getCourseId() {
@@ -89,6 +93,14 @@ public class Course {
 
     public void setSyllabus(String syllabus) {
         this.syllabus = syllabus;
+    }
+
+    public ArrayList<Course> getPrerequisiteCourse() {
+        return prerequisiteCourse;
+    }
+
+    public void setPrerequisiteCourse(ArrayList<Course> prerequisiteCourse) {
+        this.prerequisiteCourse = prerequisiteCourse;
     }
 
     public boolean enrollStudent(int studentId) {

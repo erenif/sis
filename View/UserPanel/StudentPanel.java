@@ -1,6 +1,6 @@
 package View.UserPanel;
 
-import Model.Student;
+import Entities.Student;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

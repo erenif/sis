@@ -1,7 +1,7 @@
 package Control;
 
-import Model.Course;
-import Model.Student;
+import Entities.Course;
+import Entities.Student;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

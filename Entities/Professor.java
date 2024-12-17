@@ -1,6 +1,6 @@
 package Entities;
 
-import Entities.Enums.WeekDays;
+import Entities.Enum.WeekDays;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class Professor extends User {
     }
 
     public void createCourse(int courseId, String courseName, int quota, int credits, LocalTime startTime, LocalTime endTime, WeekDays day, String syllabus) {
-        Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, day, syllabus);
+        Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, day, syllabus, new ArrayList<Course>());
         coursesTaught.add(newCourse);
         System.out.println("Course " + courseName + " created successfully by Professor " + getUserName());
     }
