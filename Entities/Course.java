@@ -103,6 +103,7 @@ public class Course {
         this.prerequisiteCourse = prerequisiteCourse;
     }
 
+
     public boolean enrollStudent(int studentId) {
         if (quota > 0) {
             quota--;
@@ -112,5 +113,9 @@ public class Course {
             System.out.println("Enrollment failed. Quota is full.");
             return false;
         }
+    }
+
+    public String toString() {
+        return courseId + ": " + courseName;
     }
 }

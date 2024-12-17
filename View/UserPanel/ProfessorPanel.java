@@ -1,12 +1,16 @@
 package View.UserPanel;
 
 import Entities.Course;
+import Entities.Enum.WeekDays;
 import Entities.Professor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProfessorPanel extends JFrame {
@@ -181,8 +185,12 @@ public class ProfessorPanel extends JFrame {
             JTextField courseNameField = new JTextField();
             JTextField creditsField = new JTextField();
             JTextField quotaField = new JTextField();
-            JTextField scheduleField = new JTextField(); // format: "Wednesday, 11.00-12.00"
+            JTextField startTimeField = new JTextField();
+            JTextField endTimeField = new JTextField();
+            JTextField courseDayField = new JTextField();
             JTextField syllabusField = new JTextField();
+            JTextField prerequisiteField = new JTextField();
+
 
             inputPanel.add(new JLabel("Course ID:"));
             inputPanel.add(courseIdField);
@@ -192,10 +200,17 @@ public class ProfessorPanel extends JFrame {
             inputPanel.add(creditsField);
             inputPanel.add(new JLabel("Quota:"));
             inputPanel.add(quotaField);
-            inputPanel.add(new JLabel("Schedule:"));
-            inputPanel.add(scheduleField);
+            inputPanel.add(new JLabel("Course Day:"));
+            inputPanel.add(courseDayField);
+            inputPanel.add(new JLabel("Start Time:"));
+            inputPanel.add(startTimeField);
+            inputPanel.add(new JLabel("End Time:"));
+            inputPanel.add(endTimeField);
             inputPanel.add(new JLabel("Syllabus:"));
             inputPanel.add(syllabusField);
+            inputPanel.add(new JLabel("Prerequisite Courses:"));
+            inputPanel.add(prerequisiteField);
+            inputPanel.add(new JLabel("Should be seperated with only comma."));
 
             int result = JOptionPane.showConfirmDialog(this, inputPanel, "Create New Course", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
@@ -204,12 +219,27 @@ public class ProfessorPanel extends JFrame {
                     String courseName = courseNameField.getText().trim();
                     int credits = Integer.parseInt(creditsField.getText().trim());
                     int quota = Integer.parseInt(quotaField.getText().trim());
-                    String schedule = scheduleField.getText().trim();
+                    String startTime_str = startTimeField.getText().trim();
+                    String endTime_str = endTimeField.getText().trim();
+                    String courseDay_str = courseDayField.getText().trim();
                     String syllabus = syllabusField.getText().trim();
+                    String prerequisite_course_str = prerequisiteField.getText().trim();
 
-                    if (!courseName.isEmpty() && !schedule.isEmpty() && !syllabus.isEmpty()) {
+                    //Processing the input data.
+                    WeekDays courseDay = WeekDays.valueOf(courseDay_str.toUpperCase());
+                    LocalTime startTime = LocalTime.parse(startTime_str);
+                    LocalTime endTime = LocalTime.parse(endTime_str);
+                    String[] prerequesites_list = prerequisite_course_str.split(",");
+                    ArrayList<String> prerequisites = new ArrayList<>();
+                    for (String prerequisite : prerequesites_list) {
+                        //TODO: Courses database should be accessed in terms of finding the input prerequisite course.
+                        prerequisites.add(prerequisite.trim());
+                    }
+                    ArrayList<Course> x = new ArrayList<>();
+
+                    if (!courseName.isEmpty() && !startTime_str.isEmpty() && !endTime_str.isEmpty() && !courseDay_str.isEmpty()  && !syllabus.isEmpty()) {
                         // Create new course in the model
-                        Course newCourse = new Course(courseId, courseName, quota, credits, schedule, syllabus);
+                        Course newCourse = new Course(courseId, courseName, quota, credits, startTime,endTime,courseDay, syllabus,x);
                         professor.getCoursesTaught().add(newCourse);
                         courseComboBox.addItem(newCourse);
 
@@ -231,9 +261,13 @@ public class ProfessorPanel extends JFrame {
     // For testing purposes
     public static void main(String[] args) {
         // Mock a professor with some courses
+        ArrayList<Course> x = new ArrayList<>();
+        WeekDays courseDay = WeekDays.valueOf("Wednesday".toUpperCase());
+        LocalTime startTime = LocalTime.parse("11:00");
+        LocalTime endTime = LocalTime.parse("12:00");
         Professor mockProfessor = new Professor(1, "Dr. Smith");
-        mockProfessor.createCourse(201, "Data Structures", 3, 30, "Syllabus DS", "Wednesday, 11.00-12.00");
-        mockProfessor.createCourse(202, "Algorithms", 3, 25, "Syllabus Algo", "Friday, 10.00-11.00");
+        mockProfessor.createCourse(201, "Data Structures", 3, 30,startTime,endTime, courseDay, "DS Syllabus");
+        //mockProfessor.createCourse(202, "Algorithms", 3, 25, "Syllabus Algo", "Friday, 10.00-11.00");
 
         SwingUtilities.invokeLater(() -> new ProfessorPanel(mockProfessor));
     }

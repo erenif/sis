@@ -1,5 +1,6 @@
 package Entities;
 
+import Entities.Enum.LetterGrades;
 import Entities.Enum.WeekDays;
 
 import java.time.LocalTime;
@@ -64,6 +65,25 @@ public class Professor extends User {
 
     //TODO: Enter Grade implementation is missing
     public boolean enterGrade(int courseId, int studentId, String grade) {
+        Course targetCourse = null;
+        for (Course course : coursesTaught) {
+            if (course.getCourseId() == courseId) {
+                targetCourse = course;
+            }
+        }
+        if (targetCourse == null) {
+            return false;
+        }
+        LetterGrades letterGrade = null;
+        try {
+            letterGrade = LetterGrades.valueOf(grade.toUpperCase());
+        }
+        //If the given letter grade input is not acceptable.
+        catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        //TODO: Finding student by its student number on database?
         return true;
     }
 }
