@@ -1,20 +1,24 @@
 package View.UserPanel;
 
+import DAOs.CourseDAO;
+import DAOs.StudentDAO;
+import Entities.Course;
 import Entities.Student;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.List;
 
 public class StudentPanel extends JFrame {
     private Student student;
+    private StudentDAO studentDAO;
+    private CourseDAO courseDAO;
 
-    // Tabs
     private JTabbedPane tabbedPane;
 
-    // Courses Tab Components
     private JTable enrolledCoursesTable;
     private DefaultTableModel enrolledCoursesTableModel;
     private JTable availableCoursesTable;
@@ -22,17 +26,17 @@ public class StudentPanel extends JFrame {
     private JButton addCourseButton;
     private JButton dropCourseButton;
 
-    // Schedule Tab Components
-    // We'll represent the schedule as a simple table: columns = Monday-Friday, rows = hours (example)
     private JTable scheduleTable;
     private DefaultTableModel scheduleTableModel;
 
-    // GPA Tab Components
     private JLabel gpaLabel;
     private JButton calculateGPAButton;
 
-    public StudentPanel(Student student) {
+    public StudentPanel(Student student, StudentDAO studentDAO, CourseDAO courseDAO) {
         this.student = student;
+        this.studentDAO = studentDAO;
+        this.courseDAO = courseDAO;
+
         setTitle("Student Panel - " + student.getUserName());
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,85 +52,63 @@ public class StudentPanel extends JFrame {
         tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
 
-        // Set up the three tabs:
         setupCoursesTab();
         setupScheduleTab();
         setupGpaTab();
 
-        // Load mock data
-        loadMockData();
+        loadDataFromDatabase();
 
-        // Action listeners (no DAO logic, just comments)
         addCourseButton.addActionListener(e -> {
-            int selectedRow = availableCoursesTable.getSelectedRow();
+            final int selectedRow = availableCoursesTable.getSelectedRow();
             if (selectedRow < 0) {
                 JOptionPane.showMessageDialog(this, "Select a course from the available courses table to add.");
                 return;
             }
 
-            int courseId = (int) availableCoursesTableModel.getValueAt(selectedRow, 0);
-            int quota = (int) availableCoursesTableModel.getValueAt(selectedRow, 2);
+            final int courseId = (int) availableCoursesTableModel.getValueAt(selectedRow, 0);
 
-            if (quota <= 0) {
-                JOptionPane.showMessageDialog(this, "Cannot add course. Quota full.");
-                return;
+            try {
+                studentDAO.enrollInCourse(student.getUserID(), courseId);
+                JOptionPane.showMessageDialog(this, "Course added successfully!");
+                loadDataFromDatabase();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error adding course: " + ex.getMessage());
             }
-
-            // TODO: DAO logic to enroll student in course if credits and quota allow
-            // After successful enrollment:
-            // Decrement quota in available courses table
-            availableCoursesTableModel.setValueAt(quota - 1, selectedRow, 2);
-
-            // Add the course to enrolled courses table
-            Object[] courseData = new Object[]{
-                    courseId,
-                    availableCoursesTableModel.getValueAt(selectedRow, 1), // course name
-                    availableCoursesTableModel.getValueAt(selectedRow, 3), // day
-                    availableCoursesTableModel.getValueAt(selectedRow, 4), // time
-                    availableCoursesTableModel.getValueAt(selectedRow, 5)  // credits
-            };
-            enrolledCoursesTableModel.addRow(courseData);
-
-            // Refresh schedule (TODO: in real scenario, recalculate schedule from enrolled courses)
-            updateSchedule();
-            JOptionPane.showMessageDialog(this, "Course added successfully!");
         });
 
         dropCourseButton.addActionListener(e -> {
-            int selectedRow = enrolledCoursesTable.getSelectedRow();
+            final int selectedRow = enrolledCoursesTable.getSelectedRow();
             if (selectedRow < 0) {
                 JOptionPane.showMessageDialog(this, "Select a course from the enrolled courses table to drop.");
                 return;
             }
 
-            int courseId = (int) enrolledCoursesTableModel.getValueAt(selectedRow, 0);
+            final int courseId = (int) enrolledCoursesTableModel.getValueAt(selectedRow, 0);
 
-            // TODO: DAO logic to drop the course from the student's schedule and update credits
-            enrolledCoursesTableModel.removeRow(selectedRow);
-
-            // Update the available courses quota if needed
-            // For example, find the course in availableCoursesTable and increment its quota by 1
-            // In a real scenario, you would know which row in availableCoursesTable matches this courseId.
-            // Here, just for demonstration:
-            for (int i = 0; i < availableCoursesTableModel.getRowCount(); i++) {
-                int avCourseId = (int) availableCoursesTableModel.getValueAt(i, 0);
-                if (avCourseId == courseId) {
-                    int currentQuota = (int) availableCoursesTableModel.getValueAt(i, 2);
-                    availableCoursesTableModel.setValueAt(currentQuota + 1, i, 2);
-                    break;
-                }
+            try {
+                studentDAO.dropCourse(student.getUserID(), courseId);
+                JOptionPane.showMessageDialog(this, "Course dropped successfully!");
+                loadDataFromDatabase();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error dropping course: " + ex.getMessage());
             }
-
-            // Refresh schedule
-            updateSchedule();
-            JOptionPane.showMessageDialog(this, "Course dropped successfully.");
         });
 
         calculateGPAButton.addActionListener(e -> {
-            // TODO: DAO logic or model logic to calculate GPA from completed courses and grades
-            // For now, just mock
-            double mockGpa = 3.4; // just a placeholder
-            gpaLabel.setText("Your current GPA: " + mockGpa);
+            try {
+                Student updatedStudent = studentDAO.getStudentById(student.getUserID());
+                if (updatedStudent != null) {
+                    this.student = updatedStudent;
+                }
+                double currentGPA = student.viewGPA();
+                student.setGpa(currentGPA);
+                gpaLabel.setText("Your current GPA: " + currentGPA);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error retrieving GPA: " + ex.getMessage());
+            }
         });
 
         setLocationRelativeTo(null);
@@ -142,7 +124,6 @@ public class StudentPanel extends JFrame {
         splitPane.setDividerLocation(200);
         coursesPanel.add(splitPane, BorderLayout.CENTER);
 
-        // Top: Enrolled Courses
         JPanel enrolledPanel = new JPanel(new BorderLayout(5,5));
         enrolledPanel.setBorder(new EmptyBorder(5,5,5,5));
         enrolledPanel.add(new JLabel("Enrolled Courses:"), BorderLayout.NORTH);
@@ -150,7 +131,6 @@ public class StudentPanel extends JFrame {
         enrolledCoursesTable = new JTable(enrolledCoursesTableModel);
         enrolledPanel.add(new JScrollPane(enrolledCoursesTable), BorderLayout.CENTER);
 
-        // Bottom: Available Courses + add/drop buttons
         JPanel availablePanel = new JPanel(new BorderLayout(5,5));
         availablePanel.setBorder(new EmptyBorder(5,5,5,5));
         availablePanel.add(new JLabel("Available Courses:"), BorderLayout.NORTH);
@@ -178,13 +158,10 @@ public class StudentPanel extends JFrame {
         scheduleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         schedulePanel.add(scheduleLabel, BorderLayout.NORTH);
 
-        // Columns: Monday to Friday
-        // Rows: Just a few time slots as example
-        scheduleTableModel = new DefaultTableModel(new Object[]{"Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}, 0);
+        scheduleTableModel = new DefaultTableModel(new Object[]{"Time", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"}, 0);
         scheduleTable = new JTable(scheduleTableModel);
         schedulePanel.add(new JScrollPane(scheduleTable), BorderLayout.CENTER);
 
-        // Initially load empty schedule
         loadEmptySchedule();
     }
 
@@ -201,39 +178,76 @@ public class StudentPanel extends JFrame {
     }
 
     private void loadEmptySchedule() {
-        // Example timeslots
-        String[] times = {"9:00-10:00", "10:00-11:00", "11:00-12:00", "1:00-2:00", "2:00-3:00"};
+
+        String[] times = {"9:00-10:00", "10:00-11:00", "11:00-12:00", "13:00-14:00", "14:00-15:00"};
         for (String time : times) {
             scheduleTableModel.addRow(new Object[]{time, "", "", "", "", ""});
         }
     }
 
+    private void loadDataFromDatabase() {
+        if (studentDAO == null || courseDAO == null) {
+            return;
+        }
+
+        try {
+            Student freshStudent = studentDAO.getStudentById(student.getUserID());
+            if (freshStudent != null) {
+                this.student = freshStudent;
+            }
+
+            enrolledCoursesTableModel.setRowCount(0);
+            for (Course c : student.getCourseList()) {
+                enrolledCoursesTableModel.addRow(new Object[]{
+                        c.getCourseId(),
+                        c.getCourseName(),
+                        c.getCourse_day().toString(),
+                        c.getStartTime() + "-" + c.getEndTime(),
+                        c.getCredits()
+                });
+            }
+
+            List<Course> allCourses = courseDAO.getAllCourses();
+            availableCoursesTableModel.setRowCount(0);
+            for (Course c : allCourses) {
+                if (!student.getCourseList().contains(c) && c.getQuota() > 0) {
+                    availableCoursesTableModel.addRow(new Object[]{
+                            c.getCourseId(),
+                            c.getCourseName(),
+                            c.getQuota(),
+                            c.getCourse_day().toString(),
+                            c.getStartTime() + "-" + c.getEndTime(),
+                            c.getCredits()
+                    });
+                }
+            }
+
+            updateSchedule();
+
+            double currentGPA = student.viewGPA();
+            student.setGpa(currentGPA);
+            gpaLabel.setText("Your current GPA: " + currentGPA);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading data from database: " + e.getMessage());
+        }
+    }
+
     private void updateSchedule() {
-        // TODO: In real scenario, use student's enrolled courses to fill the schedule
-        // Clear current schedule
         for (int row = 0; row < scheduleTableModel.getRowCount(); row++) {
             for (int col = 1; col < scheduleTableModel.getColumnCount(); col++) {
                 scheduleTableModel.setValueAt("", row, col);
             }
         }
 
-        // Mock: Fill schedule based on enrolled courses
-        // For each enrolled course, parse its day & time and place it on schedule
-        // Here we just show a mock process:
         for (int i = 0; i < enrolledCoursesTableModel.getRowCount(); i++) {
             String day = (String) enrolledCoursesTableModel.getValueAt(i, 2);
             String time = (String) enrolledCoursesTableModel.getValueAt(i, 3);
             String courseName = (String) enrolledCoursesTableModel.getValueAt(i, 1);
 
-            // In a real scenario, parse day & time and find the matching slot in schedule
-            // For mock, if day = "Wednesday" and time = "11.00-12.00" we put it in schedule
-            // Just a demo: If it's "Wednesday, 11.00-12.00" (from the example format)
-            // find that row and column.
-
-            // We'll just do a simple match:
             String[] timeParts = time.split("-");
             String start = timeParts[0].trim();
-            // Convert start to row index
             int row = findRowByTime(start);
             int col = findColumnByDay(day);
             if (row != -1 && col != -1) {
@@ -243,13 +257,14 @@ public class StudentPanel extends JFrame {
     }
 
     private int findRowByTime(String startTime) {
-        // Example: "11.00"
-        // Our schedule rows are 9:00-10:00, 10:00-11:00, etc.
-        // Just match first hour
-        int hour = Integer.parseInt(startTime.split("\\.")[0]);
+        String[] parts = startTime.split(":");
+        int hour = Integer.parseInt(parts[0]);
         for (int i = 0; i < scheduleTableModel.getRowCount(); i++) {
             String timeRange = (String) scheduleTableModel.getValueAt(i, 0);
-            if (timeRange.startsWith(String.valueOf(hour))) {
+            String startRange = timeRange.split("-")[0].trim(); // "9:00"
+            String[] rangeParts = startRange.split(":");
+            int rangeHour = Integer.parseInt(rangeParts[0]);
+            if (rangeHour == hour) {
                 return i;
             }
         }
@@ -257,36 +272,21 @@ public class StudentPanel extends JFrame {
     }
 
     private int findColumnByDay(String day) {
-        // Columns: Time, Monday, Tuesday, Wednesday, Thursday, Friday
-        switch (day) {
-            case "Monday": return 1;
-            case "Tuesday": return 2;
-            case "Wednesday": return 3;
-            case "Thursday": return 4;
-            case "Friday": return 5;
-            default: return -1;
-        }
+        day = day.toUpperCase();
+        return switch (day) {
+            case "MONDAY" -> 1;
+            case "TUESDAY" -> 2;
+            case "WEDNESDAY" -> 3;
+            case "THURSDAY" -> 4;
+            case "FRIDAY" -> 5;
+            default -> -1;
+        };
     }
 
-    private void loadMockData() {
-        // Mock enrolled courses
-        // TODO: Replace with DAO call to get currently enrolled courses
-        enrolledCoursesTableModel.addRow(new Object[]{201, "Data Structures", "Wednesday", "11.00-12.00", 3});
-        enrolledCoursesTableModel.addRow(new Object[]{202, "Algorithms", "Friday", "10.00-11.00", 3});
-
-        // Mock available courses
-        // TODO: Replace with DAO call to get all available courses
-        availableCoursesTableModel.addRow(new Object[]{301, "Database Systems", 10, "Monday", "9.00-10.00", 3});
-        availableCoursesTableModel.addRow(new Object[]{302, "Operating Systems", 5, "Tuesday", "11.00-12.00", 4});
-
-        // Update schedule based on enrolled courses
-        updateSchedule();
-    }
-
-    // Test main
+    //mockları elimden geldiğince temizlemeye çalıştım
+    // main metodunda artık null verilmeyecek, LoginPanel üzerinden gelmeli.
     public static void main(String[] args) {
-        // Mock a student
-        Student mockStudent = new Student(101, "John Doe");
-        SwingUtilities.invokeLater(() -> new StudentPanel(mockStudent));
+        // Bu main metodu test amaçlı.
+        // Normalde LoginPanel üzerinden giriş yapılıp StudentPanel'e yönlenmeli.
     }
 }
