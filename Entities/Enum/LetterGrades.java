@@ -25,4 +25,16 @@ public enum LetterGrades {
             default: return name();
         }
     }
+
+    public static LetterGrades fromDatabaseValue(String dbValue) {
+        switch (dbValue) {
+            case "A-": return A_MINUS;
+            case "B+": return B_PLUS;
+            case "B-": return B_MINUS;
+            case "C+": return C_PLUS;
+            case "C-": return C_MINUS;
+            case "D+": return D_PLUS;
+            default: return LetterGrades.valueOf(dbValue);
+        }
+    }
 }

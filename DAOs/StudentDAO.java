@@ -193,7 +193,7 @@ public class StudentDAO extends DAOs.AbstractDB {
 
             for (Course course : courses) {
                 if (course.getCourseId() == courseId) {
-                    courseGrades.put(course, grade != null ? LetterGrades.valueOf(grade) : null);
+                    courseGrades.put(course, grade != null ? LetterGrades.fromDatabaseValue(grade) : null);
                     break;
                 }
             }

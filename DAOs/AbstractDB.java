@@ -15,6 +15,9 @@ public abstract class AbstractDB {
     protected ResultSet executeQuery(String query, Object... params) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         setParameters(preparedStatement, params);
+        if (connection == null || connection.isClosed()) {
+            throw new SQLException("Database connection is closed.");
+        }
         return preparedStatement.executeQuery();
     }
 

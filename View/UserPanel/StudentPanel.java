@@ -4,11 +4,13 @@ import DAOs.CourseDAO;
 import DAOs.StudentDAO;
 import Entities.Course;
 import Entities.Student;
+import Utils.DatabaseConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
