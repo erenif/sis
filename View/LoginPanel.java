@@ -104,7 +104,7 @@ public class LoginPanel extends JPanel {
                         }
                     } else if (role.equals("Professor")) {
                         // PROFESSOR USERNAME PASSWORD CONTROL
-                        Professor professor = verifyProfessorCredentials(username, password);
+                        Professor professor = professorDAO.verifyProfessorCredentials(username, password);
                         if (professor != null) {
                             openProfessorPanel(professor);
                         } else {
@@ -112,7 +112,7 @@ public class LoginPanel extends JPanel {
                         }
                     } else if (role.equals("Student")) {
                         // STUDENT USERNAME PASSWORD CONTROL
-                        Student student = verifyStudentCredentials(username, password);
+                        Student student = studentDAO.verifyStudentCredentials(username, password);
                         if (student != null) {
                             openStudentPanel(student);
                         } else {
@@ -127,26 +127,8 @@ public class LoginPanel extends JPanel {
         });
     }
 
-    private Professor verifyProfessorCredentials(String username, String password) throws SQLException {
-        String query = "SELECT professor_id, professor_name FROM Professor_Table WHERE professor_name = ? AND password = ?";
-        var rs = professorDAO.executeQuery(query, username, password);
-        if (rs.next()) {
-            int id = rs.getInt("professor_id");
-            String name = rs.getString("professor_name");
-            return new Professor(id, name, professorDAO.getCoursesByProfessor(id));
-        }
-        return null;
-    }
 
-    private Student verifyStudentCredentials(String username, String password) throws SQLException {
-        String query = "SELECT student_id FROM Student_Table WHERE student_name = ? AND password = ?";
-        var rs = studentDAO.executeQuery(query, username, password);
-        if (rs.next()) {
-            int id = rs.getInt("student_id");
-            return studentDAO.getStudentById(id);
-        }
-        return null;
-    }
+
 
     @Override
     protected void paintComponent(Graphics g) {

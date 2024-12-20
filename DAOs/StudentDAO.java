@@ -5,6 +5,7 @@ import Entities.Enum.LetterGrades;
 import Entities.Enum.WeekDays;
 import Entities.Student;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -125,7 +126,7 @@ public class StudentDAO extends DAOs.AbstractDB {
         }
     }
 
-    private ArrayList<Course> getPrerequisites(int courseId) throws SQLException {
+    public ArrayList<Course> getPrerequisites(int courseId) throws SQLException {
         String query = """
         SELECT c.course_id, c.course_name, c.quota, c.credits, c.start_time, c.end_time, c.course_day, c.syllabus
         FROM Prerequisite_Table p
@@ -151,7 +152,7 @@ public class StudentDAO extends DAOs.AbstractDB {
         return prerequisites;
     }
 
-    private ArrayList<Course> getCoursesForStudent(int studentId) throws SQLException {
+    public ArrayList<Course> getCoursesForStudent(int studentId) throws SQLException {
         String query = """
         SELECT c.course_id, c.course_name, c.quota, c.credits, c.start_time, c.end_time, s.day_of_week, c.syllabus
         FROM Course_Table c
@@ -181,7 +182,7 @@ public class StudentDAO extends DAOs.AbstractDB {
         return courses;
     }
 
-    private HashMap<Course, LetterGrades> getCourseLetterGradesForStudent(int studentId, ArrayList<Course> courses) throws SQLException {
+    public HashMap<Course, LetterGrades> getCourseLetterGradesForStudent(int studentId, ArrayList<Course> courses) throws SQLException {
         String query = "SELECT course_id, grade FROM Enrollment_Table WHERE student_id = ?";
         ResultSet resultSet = executeQuery(query, studentId);
         HashMap<Course, LetterGrades> courseGrades = new HashMap<>();
@@ -199,4 +200,15 @@ public class StudentDAO extends DAOs.AbstractDB {
         }
         return courseGrades;
     }
+
+    public Student verifyStudentCredentials(String username, String password) throws SQLException {
+        String query = "SELECT student_id FROM Student_Table WHERE student_name = ? AND password = ?";
+        ResultSet resultSet = executeQuery(query, username, password);
+        if (resultSet.next()) {
+            int id = resultSet.getInt("student_id");
+            return getStudentById(id);
+        }
+        return null;
+    }
+
 }

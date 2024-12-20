@@ -125,4 +125,15 @@ public class ProfessorDAO extends DAOs.AbstractDB {
         }
         return courses;
     }
+
+    public Professor verifyProfessorCredentials(String username, String password) throws SQLException {
+        String query = "SELECT professor_id, professor_name FROM Professor_Table WHERE professor_name = ? AND password = ?";
+        ResultSet resultSet = executeQuery(query, username, password);
+        if (resultSet.next()) {
+            int id = resultSet.getInt("professor_id");
+            String name = resultSet.getString("professor_name");
+            return new Professor(id, name, getCoursesByProfessor(id));
+        }
+        return null;
+    }
 }
