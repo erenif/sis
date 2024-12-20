@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Student extends User{
-    private ArrayList<Course> coursesEnrolled; //Course'ların saatlerine bu arraylistten ulaşacağız.
+    private ArrayList<Course> coursesEnrolled;
     private double gpa;
     private int availableCredits;
     private HashMap<Course, LetterGrades> courseLetterGradesHashMap;
@@ -39,29 +39,25 @@ public class Student extends User{
     public double getGpa() {
         return gpa;
     }
-
     public void setGpa(double gpa) {
         this.gpa = gpa;
     }
-
     public int getAvailableCredits() {
         return availableCredits;
     }
-
     public void setAvailableCredits(int availableCredits) {
         this.availableCredits = availableCredits;
     }
 
-
     public boolean addCourse(Course course) {
-        if (coursesEnrolled.contains(course)) {
+        if (course == null) {
+            System.out.println("Course is null!");
+            return false;
+        } else if (coursesEnrolled.contains(course)) {
             System.out.println("Already enrolled!");
             return false;
         } else if (course.getQuota()<= 0) {
             System.out.println("Quota exceeded!");
-            return false;
-        } else if (course == null) {
-            System.out.println("Course is null!");
             return false;
         } else {
             coursesEnrolled.add(course);
@@ -89,33 +85,31 @@ public class Student extends User{
         return courseLetterGradesHashMap.get(course);
     }
 
-    //Özyeğin'de kullanılan ortalama hesaplama sistemi implementasyonu
     public double viewGPA(){
         double totalGpa = 0.0;
         int totalCreditsTaken = 0;
         for(Course course: coursesEnrolled){
             LetterGrades letterGrade = courseLetterGradesHashMap.get(course);
             totalCreditsTaken += course.getCredits();
-            switch (letterGrade){
-                case A -> totalGpa += 4.0;
-                case A_MINUS -> totalGpa += 3.6;
-                case B_PLUS -> totalGpa += 3.3;
-                case B -> totalGpa += 3.0;
-                case B_MINUS -> totalGpa += 2.7;
-                case C_PLUS -> totalGpa += 2.3;
-                case C -> totalGpa += 2.0;
-                case C_MINUS -> totalGpa += 1.7;
-                case D_PLUS -> totalGpa += 1.3;
-                case D -> totalGpa += 1.0;
-                case null, default -> totalGpa += 0;
+            if (letterGrade == null) {
+                totalGpa += 0;
+            } else {
+                switch (letterGrade){
+                    case A -> totalGpa += 4.0;
+                    case A_MINUS -> totalGpa += 3.6;
+                    case B_PLUS -> totalGpa += 3.3;
+                    case B -> totalGpa += 3.0;
+                    case B_MINUS -> totalGpa += 2.7;
+                    case C_PLUS -> totalGpa += 2.3;
+                    case C -> totalGpa += 2.0;
+                    case C_MINUS -> totalGpa += 1.7;
+                    case D_PLUS -> totalGpa += 1.3;
+                    case D -> totalGpa += 1.0;
+                    case F -> totalGpa += 0;
+                }
             }
         }
+        if (totalCreditsTaken == 0) return 0.0;
         return totalGpa / totalCreditsTaken;
     }
-
-
-
 }
-
-
-

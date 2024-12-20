@@ -22,13 +22,13 @@ public class Professor extends User {
     public ArrayList<Course> getCoursesTaught() {
         return coursesTaught;
     }
-
     public void setCourseList(ArrayList<Course> coursesTaught) {
         this.coursesTaught = coursesTaught;
     }
 
-    public void createCourse(int courseId, String courseName, int quota, int credits, LocalTime startTime, LocalTime endTime, WeekDays day, String syllabus) {
-        Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, day, syllabus, new ArrayList<Course>());
+    public void createCourse(int courseId, String courseName, int credits, int quota,
+                             LocalTime startTime, LocalTime endTime, WeekDays day, String syllabus) {
+        Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, day, syllabus, new ArrayList<>());
         coursesTaught.add(newCourse);
         System.out.println("Course " + courseName + " created successfully by Professor " + getUserName());
     }
@@ -44,6 +44,7 @@ public class Professor extends User {
         System.out.println("Course with ID " + courseId + " not found.");
         return false;
     }
+
     public boolean updateCourse(int courseId, String courseName, int quota, int credits, LocalTime starTime, LocalTime endTime, WeekDays day, String syllabus) {
         for (Course course : coursesTaught) {
             if (course.getCourseId() == courseId) {
@@ -63,28 +64,9 @@ public class Professor extends User {
         return false;
     }
 
-    //TODO: Enter Grade implementation is missing
+    //TODO: Implement enterGrade using DAOs
     public boolean enterGrade(int courseId, int studentId, String grade) {
-        Course targetCourse = null;
-        for (Course course : coursesTaught) {
-            if (course.getCourseId() == courseId) {
-                targetCourse = course;
-            }
-        }
-        if (targetCourse == null) {
-            return false;
-        }
-        LetterGrades letterGrade = null;
-        try {
-            letterGrade = LetterGrades.valueOf(grade.toUpperCase());
-        }
-        //If the given letter grade input is not acceptable.
-        catch (IllegalArgumentException e) {
-            return false;
-        }
-
-        //TODO: Finding student by its student number on database?
+        // Burada DAO kullanılmalı, bu sınıfta direkt veritabanı erişimi yok.
         return true;
     }
 }
-

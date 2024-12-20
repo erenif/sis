@@ -15,9 +15,9 @@ public abstract class User {
     public String getUserName() {
         return userName;
     }
-     public void setUserName(String userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
-     }
+    }
     public void setUserID(int userID) {
         this.userID = userID;
     }

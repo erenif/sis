@@ -22,33 +22,27 @@ public class LoginPanel extends JPanel {
     private JPasswordField passwordField;
     private JComboBox<String> roleSelector;
 
-    // DAO OBJECTS
     private StudentDAO studentDAO;
     private ProfessorDAO professorDAO;
     private CourseDAO courseDAO;
 
     public LoginPanel(JFrame parentFrame, Connection connection) {
         this.parentFrame = parentFrame;
-
-        // DAO OBJECTS-CONNECTION
         this.studentDAO = new StudentDAO(connection);
         this.professorDAO = new ProfessorDAO(connection);
         this.courseDAO = new CourseDAO(connection);
 
         setLayout(new GridBagLayout());
-
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
         userPanel.setBackground(new Color(255, 255, 255, 150));
         userPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // LOGO PANEL
         JLabel logoLabel = new JLabel("UNIVERSITY COURSE SELECTION SYSTEM", SwingConstants.CENTER);
         logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
         logoLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
         userPanel.add(logoLabel);
 
-        // ROLE SELECTOR
         JPanel rolePanel = new JPanel(new FlowLayout());
         JLabel roleLabel = new JLabel("Select Role:");
         roleSelector = new JComboBox<>(new String[]{"Admin", "Professor", "Student"});
@@ -57,7 +51,6 @@ public class LoginPanel extends JPanel {
         rolePanel.setOpaque(false);
         userPanel.add(rolePanel);
 
-        // USER DATA
         JPanel userDataPanel = new JPanel();
         userDataPanel.setLayout(new GridLayout(2, 2, 5, 5));
         JLabel usernameLabel = new JLabel("Username:");
@@ -72,17 +65,14 @@ public class LoginPanel extends JPanel {
         userDataPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
         userPanel.add(userDataPanel);
 
-        // ENTER BUTTON
         JButton enterButton = new JButton("Login");
         enterButton.setPreferredSize(new Dimension(180, 40));
         enterButton.setBackground(new Color(255, 255, 255));
         enterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         userPanel.add(enterButton);
 
-        // ADD USER PANEL TO FRAME USING GRIDBAG LAYOUT
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridx = 1; gbc.gridy = 1;
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.CENTER;
         add(userPanel, gbc);
@@ -94,7 +84,6 @@ public class LoginPanel extends JPanel {
                 final String password = new String(passwordField.getPassword());
                 final String role = (String) roleSelector.getSelectedItem();
 
-                // EMPTY FILES CONTROL
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Username and password cannot be empty.", "Login Error", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -102,14 +91,12 @@ public class LoginPanel extends JPanel {
 
                 try {
                     if (role.equals("Admin")) {
-                        // Varsayılan admin girişi
                         if ("admin".equals(username) && "admin123".equals(password)) {
                             openAdminPanel();
                         } else {
                             JOptionPane.showMessageDialog(null, "Login failed. Invalid admin credentials.");
                         }
                     } else if (role.equals("Professor")) {
-                        // PROFESSOR USERNAME PASSWORD CONTROL
                         Professor professor = professorDAO.verifyProfessorCredentials(username, password);
                         if (professor != null) {
                             openProfessorPanel(professor);
@@ -117,7 +104,6 @@ public class LoginPanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Login failed. Invalid professor credentials.");
                         }
                     } else if (role.equals("Student")) {
-                        // STUDENT USERNAME PASSWORD CONTROL
                         Student student = studentDAO.verifyStudentCredentials(username, password);
                         if (student != null) {
                             openStudentPanel(student);
@@ -133,9 +119,6 @@ public class LoginPanel extends JPanel {
         });
     }
 
-
-
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -145,12 +128,12 @@ public class LoginPanel extends JPanel {
 
     private void openAdminPanel() {
         parentFrame.dispose();
-        new AdminPanel();
+        new AdminPanel(studentDAO, professorDAO);
     }
 
     private void openProfessorPanel(Professor professor) {
         parentFrame.dispose();
-        new ProfessorPanel(professor);
+        new ProfessorPanel(professor, studentDAO, courseDAO);
     }
 
     private void openStudentPanel(Student student) {
