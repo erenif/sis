@@ -94,6 +94,12 @@ public class LoginPanel extends JPanel {
                 final String password = new String(passwordField.getPassword());
                 final String role = (String) roleSelector.getSelectedItem();
 
+                // EMPTY FILES CONTROL
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Username and password cannot be empty.", "Login Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 try {
                     if (role.equals("Admin")) {
                         // Varsayılan admin girişi
