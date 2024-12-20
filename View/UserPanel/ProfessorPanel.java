@@ -237,17 +237,21 @@ public class ProfessorPanel extends JFrame {
                     }
                     ArrayList<Course> x = new ArrayList<>();
 
-                    if (!courseName.isEmpty() && !startTime_str.isEmpty() && !endTime_str.isEmpty() && !courseDay_str.isEmpty()  && !syllabus.isEmpty()) {
-                        // Create new course in the model
-                        Course newCourse = new Course(courseId, courseName, quota, credits, startTime,endTime,courseDay, syllabus,x);
-                        professor.getCoursesTaught().add(newCourse);
-                        courseComboBox.addItem(newCourse);
-
-                        // TODO: DAO logic to add course to DB and link to professor
-                        JOptionPane.showMessageDialog(this, "Course created successfully!");
+                    if (courseName.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Course Name cannot be empty. Please provide a valid name.", "Missing Input", JOptionPane.WARNING_MESSAGE);
+                    } else if (startTime_str.isEmpty() || endTime_str.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Start Time and End Time cannot be empty. Please provide valid times in HH:MM format.", "Missing Input", JOptionPane.WARNING_MESSAGE);
+                    } else if (courseDay_str.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Course Day cannot be empty. Please select a valid day (e.g., Monday).", "Missing Input", JOptionPane.WARNING_MESSAGE);
+                    } else if (syllabus.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Syllabus cannot be empty. Please provide a course syllabus.", "Missing Input", JOptionPane.WARNING_MESSAGE);
                     } else {
-                        JOptionPane.showMessageDialog(this, "Please fill all fields properly.");
+                        Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, courseDay, syllabus, x);
+                        professor.getCoursesTaught().add(newCourse);
+                        this.courseComboBox.addItem(newCourse);
+                        JOptionPane.showMessageDialog(this, "Course created successfully!");
                     }
+
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Invalid numeric input for ID, credits, or quota.");
                 }
