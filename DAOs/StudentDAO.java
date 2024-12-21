@@ -91,6 +91,9 @@ public class StudentDAO extends DAOs.AbstractDB {
                 if (courseQuota <= 0) {
                     throw new SQLException("Course quota is full.");
                 }
+                if (hasScheduleConflict(studentId, courseResultSet.getTime("start_time"), courseResultSet.getTime("end_time"))) {
+                    throw new SQLException("Course schedule conflicts with another enrolled course.");
+                }
 
                 if (availableCredits >= courseCredits) {
                     String enrollQuery = "INSERT INTO Enrollment_Table (student_id, course_id) VALUES (?, ?)";
@@ -209,6 +212,25 @@ public class StudentDAO extends DAOs.AbstractDB {
             return getStudentById(id);
         }
         return null;
+    }
+    private boolean hasScheduleConflict(int studentId, java.sql.Time newStartTime, java.sql.Time newEndTime) throws SQLException {
+        String query = """
+            SELECT c.start_time, c.end_time
+            FROM Enrollment_Table e
+            INNER JOIN Course_Table c ON e.course_id = c.course_id
+            WHERE e.student_id = ?
+        """;
+        ResultSet resultSet = executeQuery(query, studentId);
+
+        while (resultSet.next()) {
+            java.sql.Time existingStartTime = resultSet.getTime("start_time");
+            java.sql.Time existingEndTime = resultSet.getTime("end_time");
+
+            if (!(newEndTime.before(existingStartTime) || newStartTime.after(existingEndTime))) {
+                return true; // Zaman çakışması var
+            }
+        }
+        return false; // Zaman çakışması yok
     }
 
 }

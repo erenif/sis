@@ -7,7 +7,6 @@ import javax.sql.DataSource;
 
 public class DatabaseConnection {
     private static final HikariDataSource dataSource;
-
     static {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://localhost:3306/ucss"); // Veritabanı URL'si
@@ -18,7 +17,6 @@ public class DatabaseConnection {
         config.setConnectionTimeout(30000); // Bağlantı oluşturma zaman aşımı (ms)
         config.setLeakDetectionThreshold(2000); // Bağlantı sızıntı tespiti (ms)
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
         dataSource = new HikariDataSource(config);
     }
 

@@ -43,10 +43,59 @@ public class DatabaseInitializer {
                 );
             """);
 
-            // Diğer tabloları ekleyin
-            // ...
+            // Professor_Table
+            statement.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS Professor_Table (
+                    professor_id INT PRIMARY KEY,
+                    professor_name VARCHAR(255) NOT NULL
+                );
+            """);
 
-            // Veri ekleme (örnek veriler)
+            // Admin_Table
+            statement.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS Admin_Table (
+                    admin_id INT PRIMARY KEY,
+                    admin_name VARCHAR(255) NOT NULL,
+                    password VARCHAR(255) NOT NULL
+                );
+            """);
+
+            // Enrollment_Table
+            statement.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS Enrollment_Table (
+                    student_id INT,
+                    course_id INT,
+                    grade VARCHAR(2),
+                    PRIMARY KEY (student_id, course_id),
+                    FOREIGN KEY (student_id) REFERENCES Student_Table(student_id),
+                    FOREIGN KEY (course_id) REFERENCES Course_Table(course_id)
+                );
+            """);
+
+            // Schedule_Table
+            statement.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS Schedule_Table (
+                    course_id INT NOT NULL,
+                    day_of_week VARCHAR(10) NOT NULL,
+                    start_time TIME NOT NULL,
+                    end_time TIME NOT NULL,
+                    PRIMARY KEY (course_id, day_of_week),
+                    FOREIGN KEY (course_id) REFERENCES Course_Table(course_id)
+                );
+            """);
+
+            // Teaching_Table
+            statement.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS Teaching_Table (
+                    professor_id INT,
+                    course_id INT UNIQUE,
+                    PRIMARY KEY (professor_id, course_id),
+                    FOREIGN KEY (professor_id) REFERENCES Professor_Table(professor_id),
+                    FOREIGN KEY (course_id) REFERENCES Course_Table(course_id)
+                );
+            """);
+
+            // Sample data
             statement.executeUpdate("""
                 INSERT INTO Course_Table (course_id, course_name, quota, credits, start_time, end_time, course_day, syllabus)
                 VALUES
@@ -63,6 +112,20 @@ public class DatabaseInitializer {
                 ON DUPLICATE KEY UPDATE student_name=VALUES(student_name);
             """);
 
+            statement.executeUpdate("""
+                INSERT INTO Professor_Table (professor_id, professor_name)
+                VALUES
+                    (201, 'Dr. John Doe'),
+                    (202, 'Dr. Jane Smith')
+                ON DUPLICATE KEY UPDATE professor_name=VALUES(professor_name);
+            """);
+
+            statement.executeUpdate("""
+                INSERT INTO Admin_Table (admin_id, admin_name, password)
+                VALUES
+                    (1, 'Admin User', 'admin123')
+                ON DUPLICATE KEY UPDATE admin_name=VALUES(admin_name);
+            """);
             System.out.println("Database initialized successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
