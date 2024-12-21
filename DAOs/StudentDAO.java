@@ -9,6 +9,7 @@ import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,41 +76,53 @@ public class StudentDAO extends DAOs.AbstractDB {
     }
 
     public void enrollInCourse(int studentId, int courseId) throws SQLException {
-        String checkCreditsQuery = "SELECT available_credits FROM Student_Table WHERE student_id = ?";
-        ResultSet resultSet = executeQuery(checkCreditsQuery, studentId);
+        String courseQuery = "SELECT start_time, end_time, credits, quota FROM Course_Table WHERE course_id = ?";
+        ResultSet courseResultSet = executeQuery(courseQuery, courseId);
 
-        if (resultSet.next()) {
-            int availableCredits = resultSet.getInt("available_credits");
+        if (courseResultSet.next()) {
+            Time startTime = courseResultSet.getTime("start_time");
+            Time endTime = courseResultSet.getTime("end_time");
+            int courseCredits = courseResultSet.getInt("credits");
+            int courseQuota = courseResultSet.getInt("quota");
 
-            String courseQuery = "SELECT credits, quota FROM Course_Table WHERE course_id = ?";
-            ResultSet courseResultSet = executeQuery(courseQuery, courseId);
+            // Check for schedule conflict
+            if (hasScheduleConflict(studentId, startTime, endTime)) {
+                throw new SQLException("Course schedule conflicts with another enrolled course.");
+            }
 
-            if (courseResultSet.next()) {
-                int courseCredits = courseResultSet.getInt("credits");
-                int courseQuota = courseResultSet.getInt("quota");
+            // Check if the course has available quota
+            if (courseQuota <= 0) {
+                throw new SQLException("Course quota is full.");
+            }
 
-                if (courseQuota <= 0) {
-                    throw new SQLException("Course quota is full.");
-                }
-                if (hasScheduleConflict(studentId, courseResultSet.getTime("start_time"), courseResultSet.getTime("end_time"))) {
-                    throw new SQLException("Course schedule conflicts with another enrolled course.");
-                }
+            // Check if the student has enough credits
+            String checkCreditsQuery = "SELECT available_credits FROM Student_Table WHERE student_id = ?";
+            ResultSet studentResultSet = executeQuery(checkCreditsQuery, studentId);
+
+            if (studentResultSet.next()) {
+                int availableCredits = studentResultSet.getInt("available_credits");
 
                 if (availableCredits >= courseCredits) {
+                    // Enroll the student in the course
                     String enrollQuery = "INSERT INTO Enrollment_Table (student_id, course_id) VALUES (?, ?)";
                     executeUpdate(enrollQuery, studentId, courseId);
 
+                    // Deduct the course credits from the student's available credits
                     String updateCreditsQuery = "UPDATE Student_Table SET available_credits = available_credits - ? WHERE student_id = ?";
                     executeUpdate(updateCreditsQuery, courseCredits, studentId);
 
+                    // Reduce the course quota
                     String updateQuotaQuery = "UPDATE Course_Table SET quota = quota - 1 WHERE course_id = ?";
                     executeUpdate(updateQuotaQuery, courseId);
                 } else {
                     throw new SQLException("Not enough available credits to enroll in the course.");
                 }
             }
+        } else {
+            throw new SQLException("Course with the given ID does not exist.");
         }
     }
+
 
     public void dropCourse(int studentId, int courseId) throws SQLException {
         String courseCreditsQuery = "SELECT credits FROM Course_Table WHERE course_id = ?";

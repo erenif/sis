@@ -126,6 +126,7 @@ public class DatabaseInitializer {
                     (1, 'Admin User', 'admin123')
                 ON DUPLICATE KEY UPDATE admin_name=VALUES(admin_name);
             """);
+
             System.out.println("Database initialized successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
