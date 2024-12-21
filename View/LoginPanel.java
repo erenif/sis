@@ -119,6 +119,7 @@ public class LoginPanel extends JPanel {
         });
     }
 
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -128,8 +129,9 @@ public class LoginPanel extends JPanel {
 
     private void openAdminPanel() {
         parentFrame.dispose();
-        new AdminPanel(studentDAO, professorDAO);
+        new AdminPanel(studentDAO, professorDAO, courseDAO);
     }
+
 
     private void openProfessorPanel(Professor professor) {
         parentFrame.dispose();

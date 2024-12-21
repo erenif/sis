@@ -25,16 +25,19 @@ public class ProfessorDAO extends DAOs.AbstractDB {
             return new Professor(
                     resultSet.getInt("professor_id"),
                     resultSet.getString("professor_name"),
+                    resultSet.getString("password"), // Şifre sütunu eklenmiş olmalı
                     getCoursesByProfessor(professorId)
             );
         }
         return null;
     }
 
+
     public void addProfessor(Professor professor) throws SQLException {
-        String query = "INSERT INTO Professor_Table (professor_id, professor_name) VALUES (?, ?)";
-        executeUpdate(query, professor.getUserID(), professor.getUserName());
+        String query = "INSERT INTO Professor_Table (professor_id, professor_name, password) VALUES (?, ?, ?)";
+        executeUpdate(query, professor.getUserID(), professor.getUserName(), professor.getPassword());
     }
+
 
     public void updateProfessor(Professor professor) throws SQLException {
         String query = "UPDATE Professor_Table SET professor_name = ? WHERE professor_id = ?";
@@ -52,14 +55,16 @@ public class ProfessorDAO extends DAOs.AbstractDB {
 
         List<Professor> professors = new ArrayList<>();
         while (resultSet.next()) {
-            professors.add(new Professor(
-                    resultSet.getInt("professor_id"),
-                    resultSet.getString("professor_name"),
-                    getCoursesByProfessor(resultSet.getInt("professor_id"))
-            ));
+            int professorId = resultSet.getInt("professor_id");
+            String professorName = resultSet.getString("professor_name");
+            String password = resultSet.getString("password"); // Şifre sütununu alıyoruz.
+            ArrayList<Course> courses = getCoursesByProfessor(professorId); // Ders listesini alıyoruz.
+
+            professors.add(new Professor(professorId, professorName, password, courses));
         }
         return professors;
     }
+
 
     public void assignCourseToProfessor(int professorId, int courseId) throws SQLException {
         String query = "INSERT INTO Teaching_Table (professor_id, course_id) VALUES (?, ?)";
@@ -125,15 +130,21 @@ public class ProfessorDAO extends DAOs.AbstractDB {
         }
         return courses;
     }
-
     public Professor verifyProfessorCredentials(String username, String password) throws SQLException {
-        String query = "SELECT professor_id, professor_name FROM Professor_Table WHERE professor_name = ? AND password = ?";
+        String query = "SELECT professor_id, professor_name, password FROM Professor_Table WHERE professor_name = ? AND password = ?";
         ResultSet resultSet = executeQuery(query, username, password);
         if (resultSet.next()) {
             int id = resultSet.getInt("professor_id");
             String name = resultSet.getString("professor_name");
-            return new Professor(id, name, getCoursesByProfessor(id));
+            String fetchedPassword = resultSet.getString("password");
+            ArrayList<Course> courses = getCoursesByProfessor(id);
+
+            return new Professor(id, name, fetchedPassword, courses);
         }
         return null;
     }
+
+
+
+
 }

@@ -44,12 +44,15 @@ public class DatabaseInitializer {
             """);
 
             // Professor_Table
+            // Professor_Table
             statement.executeUpdate("""
-                CREATE TABLE IF NOT EXISTS Professor_Table (
-                    professor_id INT PRIMARY KEY,
-                    professor_name VARCHAR(255) NOT NULL
-                );
-            """);
+    CREATE TABLE IF NOT EXISTS Professor_Table (
+        professor_id INT PRIMARY KEY,
+        professor_name VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL
+    );
+""");
+
 
             // Admin_Table
             statement.executeUpdate("""
@@ -113,12 +116,14 @@ public class DatabaseInitializer {
             """);
 
             statement.executeUpdate("""
-                INSERT INTO Professor_Table (professor_id, professor_name)
-                VALUES
-                    (201, 'Dr. John Doe'),
-                    (202, 'Dr. Jane Smith')
-                ON DUPLICATE KEY UPDATE professor_name=VALUES(professor_name);
-            """);
+    INSERT INTO Professor_Table (professor_id, professor_name, password)
+    VALUES
+        (201, 'Dr. John Doe', 'password123'),
+        (202, 'Dr. Jane Smith', 'password456')
+    ON DUPLICATE KEY UPDATE professor_name=VALUES(professor_name), password=VALUES(password);
+""");
+
+
 
             statement.executeUpdate("""
                 INSERT INTO Admin_Table (admin_id, admin_name, password)

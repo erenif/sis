@@ -170,19 +170,15 @@ public class StudentDAO extends DAOs.AbstractDB {
 
     public ArrayList<Course> getCoursesForStudent(int studentId) throws SQLException {
         String query = """
-        SELECT c.course_id, c.course_name, c.quota, c.credits, c.start_time, c.end_time, s.day_of_week, c.syllabus
+        SELECT c.course_id, c.course_name, c.quota, c.credits, c.start_time, c.end_time, c.course_day, c.syllabus
         FROM Course_Table c
         INNER JOIN Enrollment_Table e ON c.course_id = e.course_id
-        INNER JOIN Schedule_Table s ON c.course_id = s.course_id
         WHERE e.student_id = ?
     """;
         ResultSet resultSet = executeQuery(query, studentId);
         ArrayList<Course> courses = new ArrayList<>();
 
         while (resultSet.next()) {
-            // Her ders için prerequisite'leri doldur
-            ArrayList<Course> prerequisites = getPrerequisites(resultSet.getInt("course_id"));
-
             courses.add(new Course(
                     resultSet.getInt("course_id"),
                     resultSet.getString("course_name"),
@@ -190,9 +186,9 @@ public class StudentDAO extends DAOs.AbstractDB {
                     resultSet.getInt("credits"),
                     resultSet.getTime("start_time").toLocalTime(),
                     resultSet.getTime("end_time").toLocalTime(),
-                    WeekDays.valueOf(resultSet.getString("day_of_week").toUpperCase()),
+                    WeekDays.valueOf(resultSet.getString("course_day").toUpperCase()),
                     resultSet.getString("syllabus"),
-                    prerequisites
+                    new ArrayList<>()
             ));
         }
         return courses;

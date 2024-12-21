@@ -64,10 +64,15 @@ public class CourseDAO extends AbstractDB {
 
         List<Course> courses = new ArrayList<>();
         while (resultSet.next()) {
-            courses.add(mapCourse(resultSet, getPrerequisites(resultSet.getInt("course_id"))));
+            try {
+                courses.add(mapCourse(resultSet, getPrerequisites(resultSet.getInt("course_id"))));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return courses;
     }
+
 
     // 6. Belirli bir gün verilen dersleri getirir
     public List<Course> getCoursesByDay(WeekDays day) throws SQLException {
