@@ -245,8 +245,6 @@ public class StudentDAO extends DAOs.AbstractDB {
     }
 
     public List<Student> getStudentsEnrolledInCourse(int courseId) throws SQLException {
-        System.out.println("Fetching students for course_id: " + courseId);
-
         String query = """
     SELECT s.student_id, e.grade
     FROM Enrollment_Table e
@@ -258,18 +256,12 @@ public class StudentDAO extends DAOs.AbstractDB {
 
         while (resultSet.next()) {
             int studentId = resultSet.getInt("student_id");
-            System.out.println("Found student_id: " + studentId);
 
             Student student = getStudentById(studentId);
             if (student != null) {
-                System.out.println("Student fetched: " + student.getUserName());
                 students.add(student);
-            } else {
-                System.out.println("Student not found for ID: " + studentId);
             }
         }
-
-        System.out.println("Total students fetched: " + students.size());
         return students;
     }
 }

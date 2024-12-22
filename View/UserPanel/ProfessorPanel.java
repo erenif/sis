@@ -7,11 +7,14 @@ import Entities.Course;
 import Entities.Enum.WeekDays;
 import Entities.Professor;
 import Entities.Student;
+import Utils.DatabaseConnection;
+import View.LoginPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ public class ProfessorPanel extends JFrame {
     private JButton editCourseButton;
     private JButton deleteCourseButton;
     private JButton createCourseButton;
+    private JButton logoutButton;
 
     private JTable studentsTable;
     private JButton assignGradeButton;
@@ -44,10 +48,9 @@ public class ProfessorPanel extends JFrame {
         setTitle("Professor Panel - " + professor.getUserName());
         setSize(700, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10,10));
-
+        setLayout(new BorderLayout(10, 10));
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.setBorder(new EmptyBorder(10,10,10,10));
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         JLabel welcomeLabel = new JLabel("Welcome, Professor " + professor.getUserName() + "!");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(welcomeLabel);
@@ -57,8 +60,8 @@ public class ProfessorPanel extends JFrame {
         mainSplit.setDividerLocation(250);
         add(mainSplit, BorderLayout.CENTER);
 
-        JPanel coursePanel = new JPanel(new BorderLayout(10,10));
-        coursePanel.setBorder(new EmptyBorder(10,10,10,10));
+        JPanel coursePanel = new JPanel(new BorderLayout(10, 10));
+        coursePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         JLabel coursesLabel = new JLabel("Your Courses:");
         coursesLabel.setFont(new Font("Arial", Font.BOLD, 14));
         coursePanel.add(coursesLabel, BorderLayout.NORTH);
@@ -79,11 +82,13 @@ public class ProfessorPanel extends JFrame {
         }
         coursePanel.add(courseComboBox, BorderLayout.CENTER);
 
-        JPanel courseActionsPanel = new JPanel(new GridLayout(4,1,5,5));
+        JPanel courseActionsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+
         openCourseButton = new JButton("Open Course");
         editCourseButton = new JButton("Edit Course");
         deleteCourseButton = new JButton("Delete Course");
         createCourseButton = new JButton("Create Course");
+        logoutButton = new JButton("Log Out");
         openCourseButton.setToolTipText("View and manage students enrolled in this course");
         createCourseButton.setToolTipText("Add a new course to your teaching list");
         deleteCourseButton.setToolTipText("Remove the selected course");
@@ -93,10 +98,13 @@ public class ProfessorPanel extends JFrame {
         courseActionsPanel.add(createCourseButton);
         coursePanel.add(courseActionsPanel, BorderLayout.SOUTH);
 
+        topPanel.add(logoutButton,BorderLayout.EAST);
+
+
         mainSplit.setLeftComponent(coursePanel);
 
-        JPanel studentsPanel = new JPanel(new BorderLayout(10,10));
-        studentsPanel.setBorder(new EmptyBorder(10,10,10,10));
+        JPanel studentsPanel = new JPanel(new BorderLayout(10, 10));
+        studentsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         JLabel enrolledLabel = new JLabel("Enrolled Students:");
         enrolledLabel.setFont(new Font("Arial", Font.BOLD, 14));
         studentsPanel.add(enrolledLabel, BorderLayout.NORTH);
@@ -105,7 +113,7 @@ public class ProfessorPanel extends JFrame {
         studentsTable = new JTable(studentsTableModel);
         studentsPanel.add(new JScrollPane(studentsTable), BorderLayout.CENTER);
 
-        JPanel assignGradePanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,10));
+        JPanel assignGradePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         assignGradePanel.add(new JLabel("Assign Grade:"));
         gradeField = new JTextField(5);
         assignGradePanel.add(gradeField);
@@ -172,12 +180,21 @@ public class ProfessorPanel extends JFrame {
 
             int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete " + selectedCourse.getCourseName() + "?",
                     "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            // TODO: DAO logic to delete course from DB: courseDAO.deleteCourse(selectedCourse.getCourseId())
+
             if (choice == JOptionPane.YES_OPTION) {
-                // TODO: DAO logic to delete course from DB: courseDAO.deleteCourse(selectedCourse.getCourseId())
-                professor.getCoursesTaught().remove(selectedCourse);
-                courseComboBox.removeItem(selectedCourse);
-                JOptionPane.showMessageDialog(this, "Course deleted successfully.");
+                try {
+                    courseDAO.deleteCourse(selectedCourse.getCourseId());
+                    professorDAO.unassignCourseFromProfessor(selectedCourse.getCourseId());
+                    courseComboBox.removeItem(selectedCourse);
+                    JOptionPane.showMessageDialog(this, "Course deleted successfully.");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Failed to delete course: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
+            courseComboBox.removeItem(selectedCourse);
+            JOptionPane.showMessageDialog(this, "Course deleted successfully.");
         });
 
         assignGradeButton.addActionListener(e -> {
@@ -200,7 +217,7 @@ public class ProfessorPanel extends JFrame {
         });
 
         createCourseButton.addActionListener(e -> {
-            JPanel inputPanel = new JPanel(new GridLayout(9,2,5,5));
+            JPanel inputPanel = new JPanel(new GridLayout(9, 2, 5, 5));
 
             JTextField courseIdField = new JTextField();
             JTextField courseNameField = new JTextField();
@@ -267,7 +284,6 @@ public class ProfessorPanel extends JFrame {
                 }
             }
         });
-
         setLocationRelativeTo(null);
         setVisible(true);
     }

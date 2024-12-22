@@ -57,9 +57,12 @@ public class CourseDAO extends AbstractDB {
 
     // 4. Bir dersi siler
     public void deleteCourse(int courseId) throws SQLException {
-        deletePrerequisites(courseId); // Ön koşulları sil
-        String query = "DELETE FROM Course_Table WHERE course_id = ?";
-        executeUpdate(query, courseId);
+        String deleteEnrollmentQuery = "DELETE FROM Enrollment_Table WHERE course_id = ?";
+        executeUpdate(deleteEnrollmentQuery, courseId);
+        String deleteTeachingQuery = "DELETE FROM Teaching_Table WHERE course_id = ?";
+        executeUpdate(deleteTeachingQuery, courseId);
+        String deleteCourseQuery = "DELETE FROM Course_Table WHERE course_id = ?";
+        executeUpdate(deleteCourseQuery, courseId);
     }
 
     // 5. Tüm dersleri getirir
