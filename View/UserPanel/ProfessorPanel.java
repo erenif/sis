@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-// TODO: Veritabanından students enrolled almak için ek DAO metotları gerekli
 
 public class ProfessorPanel extends JFrame {
     private Professor professor;
@@ -68,8 +67,7 @@ public class ProfessorPanel extends JFrame {
         coursesLabel.setFont(new Font("Arial", Font.BOLD, 14));
         coursePanel.add(coursesLabel, BorderLayout.NORTH);
 
-        // Professor'un kurslarını veritabanından çekmek isterseniz professorDAO ile yapılmalı
-        // Şu an professor objesinde mevcut.
+
         courseComboBox = new JComboBox<>();
         try {
             List<Course> courses = professorDAO.getCoursesByProfessor(professor.getUserID());
@@ -114,7 +112,7 @@ public class ProfessorPanel extends JFrame {
         studentsTableModel = new DefaultTableModel(new Object[]{"Student ID", "Student Name", "Current Grade"}, 0){
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Tablonun düzenlenemez olmasını sağlıyor
+                return false; // Makes the table uneditable.
             }
         };
         studentsTable = new JTable(studentsTableModel);
@@ -154,15 +152,6 @@ public class ProfessorPanel extends JFrame {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-
-            // DONE: DAO logic: Enrollment_Table üzerinden bu kursa kayıtlı öğrencileri çek
-            // Örneğin studentDAO içinde getStudentsEnrolledInCourse metodu yazılabilir.
-            // List<Student> enrolledStudents = studentDAO.getStudentsEnrolledInCourse(selectedCourse.getCourseId());
-            // for (Student s : enrolledStudents) {
-            //     // s.viewLetterGrade(selectedCourse) ile notu çekebilirsiniz
-            //     studentsTableModel.addRow(new Object[]{s.getUserID(), s.getUserName(), s.viewLetterGrade(selectedCourse)});
-            // }
-
         });
 
         editCourseButton.addActionListener(e -> {
@@ -175,7 +164,11 @@ public class ProfessorPanel extends JFrame {
             String newName = JOptionPane.showInputDialog(this, "Enter new course name:", selectedCourse.getCourseName());
             if (newName != null && !newName.trim().isEmpty()) {
                 selectedCourse.setCourseName(newName);
-                // TODO: DAO logic to update the course in the DB: courseDAO.updateCourse(selectedCourse)
+                try {
+                    courseDAO.updateCourse(selectedCourse);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 courseComboBox.repaint();
             }
         });
@@ -189,7 +182,6 @@ public class ProfessorPanel extends JFrame {
 
             int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete " + selectedCourse.getCourseName() + "?",
                     "Confirm Delete", JOptionPane.YES_NO_OPTION);
-            // TODO: DAO logic to delete course from DB: courseDAO.deleteCourse(selectedCourse.getCourseId())
 
             if (choice == JOptionPane.YES_OPTION) {
                 try {
@@ -222,7 +214,6 @@ public class ProfessorPanel extends JFrame {
             int studentId = (int) studentsTable.getValueAt(selectedRow,0);
             int courseId = selectedCourse.getCourseId();
 
-            // TODO: DAO logic to assign grade in Enrollment_Table
             try {
                 studentDAO.assignGrade(studentId, courseId, grade);
             } catch (SQLException ex) {
@@ -285,7 +276,6 @@ public class ProfessorPanel extends JFrame {
 
                     Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, courseDay, syllabus, new ArrayList<>());
 
-                    // TODO: DAO logic to add course: courseDAO.addCourse(newCourse)
                     courseDAO.addCourse(newCourse);
                     professorDAO.assignCourseToProfessor(professor.getUserID(), courseId);
                     this.courseComboBox.addItem(newCourse);

@@ -116,7 +116,7 @@ public class AdminPanel extends JFrame {
         ){
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Tablonun düzenlenemez olmasını sağlıyor
+                return false; // Makes table uneditable.
             }
         };;
         coursesTable = new JTable(coursesTableModel);

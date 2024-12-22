@@ -4,9 +4,7 @@ import DAOs.CourseDAO;
 import DAOs.StudentDAO;
 import Entities.Course;
 import Entities.Student;
-import Utils.DatabaseConnection;
 import View.LoginPanel;
-import Control.ConflictChecker;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -69,15 +67,12 @@ public class StudentPanel extends JFrame {
         loadDataFromDatabase();
 
         logoutButton.addActionListener(e -> {
-            // Close this AdminPanel
             dispose();
 
-            // Show the LoginPanel again
             JFrame loginFrame = new JFrame("Login");
             loginFrame.setSize(600, 400);
             loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            // Create a new LoginPanel, passing the same connection, if needed
             LoginPanel loginPanel = new LoginPanel(loginFrame, connection);
             loginFrame.add(loginPanel);
 
@@ -157,7 +152,7 @@ public class StudentPanel extends JFrame {
         enrolledCoursesTableModel = new DefaultTableModel(new Object[]{"Course ID", "Course Name", "Day", "Time", "Credits"}, 0){
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Tablonun düzenlenemez olmasını sağlıyor
+                return false; // Makes table uneditable.
             }
         };
         enrolledCoursesTable = new JTable(enrolledCoursesTableModel);
@@ -169,7 +164,7 @@ public class StudentPanel extends JFrame {
         availableCoursesTableModel = new DefaultTableModel(new Object[]{"Course ID", "Course Name", "Quota", "Day", "Time", "Credits"}, 0){
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Tablonun düzenlenemez olmasını sağlıyor
+                return false; // Makes table uneditable.
             }
         };
         availableCoursesTable = new JTable(availableCoursesTableModel);
@@ -195,7 +190,6 @@ public class StudentPanel extends JFrame {
         scheduleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         schedulePanel.add(scheduleLabel, BorderLayout.NORTH);
 
-        // Create a DefaultTableModel that always returns false for isCellEditable
         scheduleTableModel = new DefaultTableModel(
                 new Object[]{"Time", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"},
                 0
@@ -224,7 +218,7 @@ public class StudentPanel extends JFrame {
 
     private void loadEmptySchedule() {
 
-        String[] times = {"9:00-10:00", "10:00-11:00", "11:00-12:00", "13:00-14:00", "14:00-15:00"};
+        String[] times = {"9:00-10:00", "10:00-11:00", "11:00-12:00","12:00-13:00","13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00"};
         for (String time : times) {
             scheduleTableModel.addRow(new Object[]{time, "", "", "", "", ""});
         }

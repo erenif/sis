@@ -32,7 +32,6 @@ public class LoginPanel extends JPanel {
         this.professorDAO = new ProfessorDAO(connection);
         this.courseDAO = new CourseDAO(connection);
 
-        // Use a GridBagLayout for the outer panel so we can center userPanel
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -40,19 +39,16 @@ public class LoginPanel extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Main container for the login form
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
         userPanel.setBackground(new Color(255, 255, 255, 150));
         userPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Title / Logo label
         JLabel logoLabel = new JLabel("UNIVERSITY COURSE SELECTION SYSTEM", SwingConstants.CENTER);
         logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
         logoLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
         userPanel.add(logoLabel);
 
-        // Role selector panel
         JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel roleLabel = new JLabel("Select Role:");
         roleSelector = new JComboBox<>(new String[]{"Admin", "Professor", "Student"});
@@ -77,11 +73,9 @@ public class LoginPanel extends JPanel {
         userDataPanel.add(passwordField);
 
         JCheckBox showPassword = new JCheckBox("Show Password");
-        // Put the checkbox in column 0, row 3; add a filler label in column 1
         userDataPanel.add(showPassword);
-        userDataPanel.add(new JLabel()); // filler
+        userDataPanel.add(new JLabel());
 
-        // Action to toggle password visibility
         showPassword.addActionListener(e -> {
             if (showPassword.isSelected()) {
                 passwordField.setEchoChar('\0'); // show password
