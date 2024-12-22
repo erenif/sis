@@ -1,7 +1,9 @@
 package DAOs;
 
 import Entities.Course;
+import Entities.Enum.LetterGrades;
 import Entities.Enum.WeekDays;
+import Entities.Student;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -27,14 +29,17 @@ public class CourseDAO extends AbstractDB {
     }
 
     // 2. Yeni bir dersi ekler
-    public void addCourse(Course course) throws SQLException {
+    public void addCourse(Course course) {
         String query = "INSERT INTO Course_Table (course_id, course_name, quota, credits, start_time, end_time, course_day, syllabus) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        executeUpdate(query, course.getCourseId(), course.getCourseName(), course.getQuota(), course.getCredits(),
-                course.getStartTime(), course.getEndTime(), course.getCourse_day().toString(), course.getSyllabus());
+        try {
+            executeUpdate(query, course.getCourseId(), course.getCourseName(), course.getQuota(), course.getCredits(),
+                    course.getStartTime(), course.getEndTime(), course.getCourse_day().toString(), course.getSyllabus());
 
-        // Ön koşul dersleri ekle
-        addPrerequisites(course.getCourseId(), course.getPrerequisiteCourse());
+            addPrerequisites(course.getCourseId(), course.getPrerequisiteCourse());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // 3. Bir dersi günceller

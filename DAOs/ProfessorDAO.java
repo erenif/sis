@@ -3,6 +3,7 @@ package DAOs;
 import Entities.Enum.WeekDays;
 import Entities.Professor;
 import Entities.Course;
+import Entities.Student;
 
 
 import java.sql.Connection;

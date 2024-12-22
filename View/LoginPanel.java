@@ -135,7 +135,7 @@ public class LoginPanel extends JPanel {
 
     private void openProfessorPanel(Professor professor) {
         parentFrame.dispose();
-        new ProfessorPanel(professor, studentDAO, courseDAO);
+        new ProfessorPanel(professor, studentDAO, courseDAO,professorDAO);
     }
 
     private void openStudentPanel(Student student) {

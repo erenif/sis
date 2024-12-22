@@ -18,7 +18,7 @@ public class Main {
                 // Login panelini başlat
                 JFrame frame = new JFrame("Login");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(400, 300);
+                frame.setSize(600, 300);
                 frame.setLocationRelativeTo(null);
                 frame.add(new LoginPanel(frame, guiConnection));
                 frame.setVisible(true);

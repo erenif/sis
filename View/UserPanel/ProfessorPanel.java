@@ -1,10 +1,12 @@
 package View.UserPanel;
 
 import DAOs.CourseDAO;
+import DAOs.ProfessorDAO;
 import DAOs.StudentDAO;
 import Entities.Course;
 import Entities.Enum.WeekDays;
 import Entities.Professor;
+import Entities.Student;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,12 +15,14 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 // TODO: Veritabanından students enrolled almak için ek DAO metotları gerekli
 
 public class ProfessorPanel extends JFrame {
     private Professor professor;
     private StudentDAO studentDAO;
     private CourseDAO courseDAO;
+    private ProfessorDAO professorDAO;
 
     private JComboBox<Course> courseComboBox;
     private JButton openCourseButton;
@@ -31,10 +35,11 @@ public class ProfessorPanel extends JFrame {
     private JTextField gradeField;
     private DefaultTableModel studentsTableModel;
 
-    public ProfessorPanel(Professor professor, StudentDAO studentDAO, CourseDAO courseDAO) {
+    public ProfessorPanel(Professor professor, StudentDAO studentDAO, CourseDAO courseDAO, ProfessorDAO professorDAO) {
         this.professor = professor;
         this.studentDAO = studentDAO;
         this.courseDAO = courseDAO;
+        this.professorDAO = professorDAO;
 
         setTitle("Professor Panel - " + professor.getUserName());
         setSize(700, 500);
@@ -60,8 +65,18 @@ public class ProfessorPanel extends JFrame {
 
         // Professor'un kurslarını veritabanından çekmek isterseniz professorDAO ile yapılmalı
         // Şu an professor objesinde mevcut.
-        ArrayList<Course> courses = professor.getCoursesTaught();
-        courseComboBox = new JComboBox<>(courses.toArray(new Course[0]));
+        courseComboBox = new JComboBox<>();
+        try {
+            List<Course> courses = professorDAO.getCoursesByProfessor(professor.getUserID());
+            for (Course course : courses) {
+                System.out.println(course.getCourseName());
+                System.out.println("1");
+                courseComboBox.addItem(course);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error fetching courses: " + ex.getMessage());
+        }
         coursePanel.add(courseComboBox, BorderLayout.CENTER);
 
         JPanel courseActionsPanel = new JPanel(new GridLayout(4,1,5,5));
@@ -69,6 +84,9 @@ public class ProfessorPanel extends JFrame {
         editCourseButton = new JButton("Edit Course");
         deleteCourseButton = new JButton("Delete Course");
         createCourseButton = new JButton("Create Course");
+        openCourseButton.setToolTipText("View and manage students enrolled in this course");
+        createCourseButton.setToolTipText("Add a new course to your teaching list");
+        deleteCourseButton.setToolTipText("Remove the selected course");
         courseActionsPanel.add(openCourseButton);
         courseActionsPanel.add(editCourseButton);
         courseActionsPanel.add(deleteCourseButton);
@@ -107,7 +125,20 @@ public class ProfessorPanel extends JFrame {
 
             studentsTableModel.setRowCount(0);
 
-            // TODO: DAO logic: Enrollment_Table üzerinden bu kursa kayıtlı öğrencileri çek
+            try {
+                List<Student> enrolledStudents = studentDAO.getStudentsEnrolledInCourse(selectedCourse.getCourseId());
+                for (Student student : enrolledStudents) {
+                    studentsTableModel.addRow(new Object[]{
+                            student.getUserID(),
+                            student.getUserName(),
+                            student.viewLetterGrade(selectedCourse)
+                    });
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+            // DONE: DAO logic: Enrollment_Table üzerinden bu kursa kayıtlı öğrencileri çek
             // Örneğin studentDAO içinde getStudentsEnrolledInCourse metodu yazılabilir.
             // List<Student> enrolledStudents = studentDAO.getStudentsEnrolledInCourse(selectedCourse.getCourseId());
             // for (Student s : enrolledStudents) {
@@ -221,7 +252,8 @@ public class ProfessorPanel extends JFrame {
                     Course newCourse = new Course(courseId, courseName, quota, credits, startTime, endTime, courseDay, syllabus, new ArrayList<>());
 
                     // TODO: DAO logic to add course: courseDAO.addCourse(newCourse)
-                    professor.getCoursesTaught().add(newCourse);
+                    courseDAO.addCourse(newCourse);
+                    professorDAO.assignCourseToProfessor(professor.getUserID(), courseId);
                     this.courseComboBox.addItem(newCourse);
                     JOptionPane.showMessageDialog(this, "Course created successfully!");
 
@@ -229,6 +261,9 @@ public class ProfessorPanel extends JFrame {
                     JOptionPane.showMessageDialog(this, "Invalid numeric input for ID, credits, or quota.");
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this, "Invalid day or time format.");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error assigning course to professor: " + ex.getMessage());
+                    throw new RuntimeException(ex);
                 }
             }
         });

@@ -4,6 +4,7 @@ import Entities.Course;
 import Entities.Enum.LetterGrades;
 import Entities.Enum.WeekDays;
 import Entities.Student;
+import DAOs.CourseDAO;
 
 import javax.xml.transform.Result;
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 
 public class StudentDAO extends DAOs.AbstractDB {
     public StudentDAO(Connection connection) {
@@ -242,4 +244,32 @@ public class StudentDAO extends DAOs.AbstractDB {
         return false; // Zaman çakışması yok
     }
 
+    public List<Student> getStudentsEnrolledInCourse(int courseId) throws SQLException {
+        System.out.println("Fetching students for course_id: " + courseId);
+
+        String query = """
+    SELECT s.student_id, e.grade
+    FROM Enrollment_Table e
+    INNER JOIN Student_Table s ON e.student_id = s.student_id
+    WHERE e.course_id = ?
+    """;
+        ResultSet resultSet = executeQuery(query, courseId);
+        List<Student> students = new ArrayList<>();
+
+        while (resultSet.next()) {
+            int studentId = resultSet.getInt("student_id");
+            System.out.println("Found student_id: " + studentId);
+
+            Student student = getStudentById(studentId);
+            if (student != null) {
+                System.out.println("Student fetched: " + student.getUserName());
+                students.add(student);
+            } else {
+                System.out.println("Student not found for ID: " + studentId);
+            }
+        }
+
+        System.out.println("Total students fetched: " + students.size());
+        return students;
+    }
 }
