@@ -32,18 +32,28 @@ public class LoginPanel extends JPanel {
         this.professorDAO = new ProfessorDAO(connection);
         this.courseDAO = new CourseDAO(connection);
 
+        // Use a GridBagLayout for the outer panel so we can center userPanel
         setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // Main container for the login form
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
         userPanel.setBackground(new Color(255, 255, 255, 150));
         userPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        // Title / Logo label
         JLabel logoLabel = new JLabel("UNIVERSITY COURSE SELECTION SYSTEM", SwingConstants.CENTER);
         logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
         logoLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
         userPanel.add(logoLabel);
 
-        JPanel rolePanel = new JPanel(new FlowLayout());
+        // Role selector panel
+        JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel roleLabel = new JLabel("Select Role:");
         roleSelector = new JComboBox<>(new String[]{"Admin", "Professor", "Student"});
         rolePanel.add(roleLabel);
@@ -51,42 +61,50 @@ public class LoginPanel extends JPanel {
         rolePanel.setOpaque(false);
         userPanel.add(rolePanel);
 
+        // User data panel (username, password, show password checkbox)
         JPanel userDataPanel = new JPanel();
-        userDataPanel.setLayout(new GridLayout(2, 2, 5, 5));
+        // 3 rows, 2 columns => (row1: username label & field), (row2: password label & field), (row3: checkbox & empty cell)
+        userDataPanel.setLayout(new GridLayout(3, 2, 5, 5));
+
         JLabel usernameLabel = new JLabel("Username:");
         usernameField = new JTextField();
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordField = new JPasswordField();
         userDataPanel.add(usernameLabel);
         userDataPanel.add(usernameField);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordField = new JPasswordField();
         userDataPanel.add(passwordLabel);
         userDataPanel.add(passwordField);
+
         JCheckBox showPassword = new JCheckBox("Show Password");
-        showPassword.addActionListener(e -> passwordField.setEchoChar(showPassword.isSelected() ? '\0' : '*'));
+        // Put the checkbox in column 0, row 3; add a filler label in column 1
         userDataPanel.add(showPassword);
+        userDataPanel.add(new JLabel()); // filler
+
+        // Action to toggle password visibility
+        showPassword.addActionListener(e -> {
+            if (showPassword.isSelected()) {
+                passwordField.setEchoChar('\0'); // show password
+            } else {
+                passwordField.setEchoChar('*'); // hide password
+            }
+        });
+
         userDataPanel.setOpaque(false);
         userDataPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
         userPanel.add(userDataPanel);
 
+        // Login button
         JButton enterButton = new JButton("Login");
         enterButton.setPreferredSize(new Dimension(180, 40));
         enterButton.setBackground(new Color(255, 255, 255));
         enterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         userPanel.add(enterButton);
 
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        progressBar.setString("Loading...");
-        progressBar.setStringPainted(true);
-        add(progressBar, BorderLayout.SOUTH);
-
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 1;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.CENTER;
+        // Add userPanel to this panel using GridBag
         add(userPanel, gbc);
 
+        // Action listener for login logic
         enterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -95,51 +113,57 @@ public class LoginPanel extends JPanel {
                 final String role = (String) roleSelector.getSelectedItem();
 
                 if (username.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Username cannot be empty. Please provide your username.", "Login Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Username cannot be empty. Please provide your username.",
+                            "Login Error",
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 if (password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Password cannot be empty. Please provide your password.", "Login Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Password cannot be empty. Please provide your password.",
+                            "Login Error",
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-
-                if (password.length() < 8 || !password.matches(".*[A-Z].*") || !password.matches(".*\\d.*")) {
-                    JOptionPane.showMessageDialog(null, "Password must be at least 8 characters long, include a capital letter, and a number.",
-                            "Weak Password", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
 
                 try {
-                    if (role.equals("Admin")) {
-                        if ("admin".equals(username) && "admin123".equals(password)) {
-                            openAdminPanel(connection);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Login failed. Invalid admin credentials.");
-                        }
-                    } else if (role.equals("Professor")) {
-                        Professor professor = professorDAO.verifyProfessorCredentials(username, password);
-                        if (professor != null) {
-                            openProfessorPanel(professor,connection);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Login failed. Invalid professor credentials.");
-                        }
-                    } else if (role.equals("Student")) {
-                        Student student = studentDAO.verifyStudentCredentials(username, password);
-                        if (student != null) {
-                            openStudentPanel(student,connection);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Login failed. Invalid student credentials.");
-                        }
+                    switch (role) {
+                        case "Admin":
+                            if ("admin".equals(username) && "admin123".equals(password)) {
+                                openAdminPanel(connection);
+                            } else {
+                                JOptionPane.showMessageDialog(null,
+                                        "Login failed. Invalid admin credentials.");
+                            }
+                            break;
+                        case "Professor":
+                            Professor professor = professorDAO.verifyProfessorCredentials(username, password);
+                            if (professor != null) {
+                                openProfessorPanel(professor, connection);
+                            } else {
+                                JOptionPane.showMessageDialog(null,
+                                        "Login failed. Invalid professor credentials.");
+                            }
+                            break;
+                        case "Student":
+                            Student student = studentDAO.verifyStudentCredentials(username, password);
+                            if (student != null) {
+                                openStudentPanel(student, connection);
+                            } else {
+                                JOptionPane.showMessageDialog(null,
+                                        "Login failed. Invalid student credentials.");
+                            }
+                            break;
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Database error: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null,
+                            "Database error: " + ex.getMessage());
                 }
             }
         });
     }
-
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -153,10 +177,9 @@ public class LoginPanel extends JPanel {
         new AdminPanel(studentDAO, professorDAO, courseDAO, connection);
     }
 
-
     private void openProfessorPanel(Professor professor, Connection connection) {
         parentFrame.dispose();
-        new ProfessorPanel(professor, studentDAO, courseDAO,professorDAO, connection);
+        new ProfessorPanel(professor, studentDAO, courseDAO, professorDAO, connection);
     }
 
     private void openStudentPanel(Student student, Connection connection) {
