@@ -240,9 +240,11 @@ public class AdminPanel extends JFrame {
                     existing.setGpa(newGpa);
                     existing.setAvailableCredits(newCredits);
                     if (!newPassword.isEmpty()) {
-                        existing.setPassword(newPassword);  // only update if not blank
+                        existing.setPassword(newPassword); // only update if not blank
+                        studentDAO.updateStudent(existing);
+                    }else {
+                        studentDAO.updateStudentWithoutPassword(existing);
                     }
-                    studentDAO.updateStudent(existing);
 
                     loadDataFromDatabase();
                     JOptionPane.showMessageDialog(this, "Student updated successfully!");
