@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
@@ -29,8 +30,9 @@ public class AdminPanel extends JFrame {
     private StudentDAO studentDAO;
     private ProfessorDAO professorDAO;
     private CourseDAO courseDAO;
+    private JButton logoutButton;
 
-    public AdminPanel(StudentDAO studentDAO, ProfessorDAO professorDAO, CourseDAO courseDAO) {
+    public AdminPanel(StudentDAO studentDAO, ProfessorDAO professorDAO, CourseDAO courseDAO, Connection connection) {
         this.studentDAO = studentDAO;
         this.professorDAO = professorDAO;
         this.courseDAO = courseDAO;
@@ -46,6 +48,10 @@ public class AdminPanel extends JFrame {
         JLabel welcomeLabel = new JLabel("Welcome, Admin!");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(welcomeLabel);
+
+        logoutButton = new JButton("Logout");
+        topPanel.add(logoutButton, BorderLayout.EAST);
+
         add(topPanel, BorderLayout.NORTH);
 
         // TabbedPane for Students, Professors, Courses
@@ -111,6 +117,29 @@ public class AdminPanel extends JFrame {
         loadDataFromDatabase();
 
         // ========== Action Listeners ==========
+
+        logoutButton.addActionListener(e -> {
+            // Close this AdminPanel
+            dispose();
+            JFrame frame = new JFrame("Login");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(600, 300);
+            frame.setLocationRelativeTo(null);
+            frame.add(new LoginPanel(frame, connection));
+            frame.setVisible(true);
+
+            // Show the LoginPanel again
+            JFrame loginFrame = new JFrame("Login");
+            loginFrame.setSize(600, 400);
+            loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // Create a new LoginPanel, passing the same connection, if needed
+            LoginPanel loginPanel = new LoginPanel(loginFrame, connection);
+            loginFrame.add(loginPanel);
+
+            loginFrame.setLocationRelativeTo(null);
+            loginFrame.setVisible(true);
+        });
 
         // Create Student
         createStudentButton.addActionListener(e -> {
