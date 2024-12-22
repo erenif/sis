@@ -70,12 +70,6 @@ public class StudentPanel extends JFrame {
         logoutButton.addActionListener(e -> {
             // Close this AdminPanel
             dispose();
-            JFrame frame = new JFrame("Login");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 300);
-            frame.setLocationRelativeTo(null);
-            frame.add(new LoginPanel(frame, connection));
-            frame.setVisible(true);
 
             // Show the LoginPanel again
             JFrame loginFrame = new JFrame("Login");
@@ -190,10 +184,18 @@ public class StudentPanel extends JFrame {
         scheduleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         schedulePanel.add(scheduleLabel, BorderLayout.NORTH);
 
-        scheduleTableModel = new DefaultTableModel(new Object[]{"Time", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"}, 0);
+        // Create a DefaultTableModel that always returns false for isCellEditable
+        scheduleTableModel = new DefaultTableModel(
+                new Object[]{"Time", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"},
+                0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // Make the entire table read-only
+            }
+        };
         scheduleTable = new JTable(scheduleTableModel);
         schedulePanel.add(new JScrollPane(scheduleTable), BorderLayout.CENTER);
-
         loadEmptySchedule();
     }
 
@@ -313,12 +315,5 @@ public class StudentPanel extends JFrame {
             case "FRIDAY" -> 5;
             default -> -1;
         };
-    }
-
-    //mockları elimden geldiğince temizlemeye çalıştım
-    // main metodunda artık null verilmeyecek, LoginPanel üzerinden gelmeli.
-    public static void main(String[] args) {
-        // Bu main metodu test amaçlı.
-        // Normalde LoginPanel üzerinden giriş yapılıp StudentPanel'e yönlenmeli.
     }
 }

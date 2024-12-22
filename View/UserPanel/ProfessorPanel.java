@@ -287,12 +287,6 @@ public class ProfessorPanel extends JFrame {
 
         logoutButton.addActionListener(e -> {
             dispose();
-            JFrame frame = new JFrame("Login");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 300);
-            frame.setLocationRelativeTo(null);
-            frame.add(new LoginPanel(frame, connection));
-            frame.setVisible(true);
 
             JFrame loginFrame = new JFrame("Login");
             loginFrame.setSize(600, 400);
