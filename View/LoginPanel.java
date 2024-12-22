@@ -74,6 +74,13 @@ public class LoginPanel extends JPanel {
         enterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         userPanel.add(enterButton);
 
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        progressBar.setString("Loading...");
+        progressBar.setStringPainted(true);
+        add(progressBar, BorderLayout.SOUTH);
+
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1; gbc.gridy = 1;
         gbc.insets = new Insets(10, 10, 10, 10);
