@@ -6,6 +6,7 @@ import Entities.Course;
 import Entities.Student;
 import Utils.DatabaseConnection;
 import View.LoginPanel;
+import Control.ConflictChecker;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

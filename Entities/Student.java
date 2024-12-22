@@ -105,17 +105,18 @@ public class Student extends User{
                 totalGpa += 0;
             } else {
                 switch (letterGrade){
-                    case A -> totalGpa += 4.0;
-                    case A_MINUS -> totalGpa += 3.6;
-                    case B_PLUS -> totalGpa += 3.3;
-                    case B -> totalGpa += 3.0;
-                    case B_MINUS -> totalGpa += 2.7;
-                    case C_PLUS -> totalGpa += 2.3;
-                    case C -> totalGpa += 2.0;
-                    case C_MINUS -> totalGpa += 1.7;
-                    case D_PLUS -> totalGpa += 1.3;
-                    case D -> totalGpa += 1.0;
+                    case A -> totalGpa += (4.0*course.getCredits());
+                    case A_MINUS -> totalGpa += (3.6*course.getCredits());
+                    case B_PLUS -> totalGpa += (3.3*course.getCredits());
+                    case B -> totalGpa += (3.0*course.getCredits());
+                    case B_MINUS -> totalGpa += (2.7*course.getCredits());
+                    case C_PLUS -> totalGpa += (2.3*course.getCredits());
+                    case C -> totalGpa += (2.0*course.getCredits());
+                    case C_MINUS -> totalGpa += (1.7*course.getCredits());
+                    case D_PLUS -> totalGpa += (1.3*course.getCredits());
+                    case D -> totalGpa += (1.0*course.getCredits());
                     case F -> totalGpa += 0;
+                    case NA -> totalGpa += 0;
                 }
             }
         }

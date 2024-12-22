@@ -11,7 +11,8 @@ public enum LetterGrades {
     C_MINUS,
     D_PLUS,
     D,
-    F;
+    F,
+    NA;
 
     @Override
     public String toString() {
@@ -20,8 +21,13 @@ public enum LetterGrades {
             case B_PLUS: return "B+";
             case B_MINUS: return "B-";
             case C_PLUS: return "C+";
+            case C: return "C";
             case C_MINUS: return "C-";
             case D_PLUS: return "D+";
+            case D: return "D";
+            case F: return "F";
+            case NA: return "NA";
+            case null: return "NA";
             default: return name();
         }
     }
@@ -34,6 +40,10 @@ public enum LetterGrades {
             case "C+": return C_PLUS;
             case "C-": return C_MINUS;
             case "D+": return D_PLUS;
+            case "D": return D;
+            case "F": return F;
+            case "NA": return NA;
+            case null: return NA;
             default: return LetterGrades.valueOf(dbValue);
         }
     }

@@ -14,9 +14,10 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 
-public class StudentDAO extends DAOs.AbstractDB {
+public class StudentDAO extends AbstractDB {
     public StudentDAO(Connection connection) {
         super(connection);
     }
@@ -39,6 +40,26 @@ public class StudentDAO extends DAOs.AbstractDB {
             );
         }
         return null;
+    }
+
+    public void assignGrade(int studentId, int courseId, String grade) throws SQLException {
+        String query = "UPDATE Enrollment_Table SET grade = ? WHERE student_id = ? AND course_id = ?";
+        executeUpdate(query, grade, studentId, courseId);
+    }
+
+    public LetterGrades getLetterGradeByIds(int studentId, int courseId) throws SQLException {
+        String query = "SELECT grade FROM Enrollment_Table WHERE student_id = ? AND course_id = ?";
+        ResultSet result = executeQuery(query, studentId, courseId);
+        LetterGrades grade = null;
+        if (result.next()) {
+            if (result.getString("grade") != null) {
+                grade = LetterGrades.fromDatabaseValue(result.getString("grade"));
+            } else {
+                grade = LetterGrades.valueOf("NA");
+            }
+
+        }
+        return grade;
     }
 
     public void addStudent(Student student) throws SQLException {
@@ -83,7 +104,7 @@ public class StudentDAO extends DAOs.AbstractDB {
     }
 
     public void enrollInCourse(int studentId, int courseId) throws SQLException {
-        String courseQuery = "SELECT start_time, end_time, credits, quota FROM Course_Table WHERE course_id = ?";
+        String courseQuery = "SELECT start_time, end_time, credits, quota, course_day FROM Course_Table WHERE course_id = ?";
         ResultSet courseResultSet = executeQuery(courseQuery, courseId);
 
         if (courseResultSet.next()) {
@@ -91,9 +112,10 @@ public class StudentDAO extends DAOs.AbstractDB {
             Time endTime = courseResultSet.getTime("end_time");
             int courseCredits = courseResultSet.getInt("credits");
             int courseQuota = courseResultSet.getInt("quota");
+            String courseDay = courseResultSet.getString("course_day");
 
             // Check for schedule conflict
-            if (hasScheduleConflict(studentId, startTime, endTime)) {
+            if (hasScheduleConflict(studentId, startTime, endTime, courseDay)) {
                 throw new SQLException("Course schedule conflicts with another enrolled course.");
             }
 
@@ -110,6 +132,7 @@ public class StudentDAO extends DAOs.AbstractDB {
                 int availableCredits = studentResultSet.getInt("available_credits");
 
                 if (availableCredits >= courseCredits) {
+                    LetterGrades grade = LetterGrades.valueOf("NA");
                     // Enroll the student in the course
                     String enrollQuery = "INSERT INTO Enrollment_Table (student_id, course_id) VALUES (?, ?)";
                     executeUpdate(enrollQuery, studentId, courseId);
@@ -229,9 +252,9 @@ public class StudentDAO extends DAOs.AbstractDB {
         }
         return null;
     }
-    private boolean hasScheduleConflict(int studentId, java.sql.Time newStartTime, java.sql.Time newEndTime) throws SQLException {
+    private boolean hasScheduleConflict(int studentId, Time newStartTime, Time newEndTime, String course_day) throws SQLException {
         String query = """
-            SELECT c.start_time, c.end_time
+            SELECT c.start_time, c.end_time, c.course_day
             FROM Enrollment_Table e
             INNER JOIN Course_Table c ON e.course_id = c.course_id
             WHERE e.student_id = ?
@@ -239,10 +262,11 @@ public class StudentDAO extends DAOs.AbstractDB {
         ResultSet resultSet = executeQuery(query, studentId);
 
         while (resultSet.next()) {
-            java.sql.Time existingStartTime = resultSet.getTime("start_time");
-            java.sql.Time existingEndTime = resultSet.getTime("end_time");
+            String existingCourseDay = resultSet.getString("course_day");
+            Time existingStartTime = resultSet.getTime("start_time");
+            Time existingEndTime = resultSet.getTime("end_time");
 
-            if (!(newEndTime.before(existingStartTime) || newStartTime.after(existingEndTime))) {
+            if ((!(newEndTime.before(existingStartTime) || newStartTime.after(existingEndTime))) && (Objects.equals(existingCourseDay, course_day))) {
                 return true; // Zaman çakışması var
             }
         }

@@ -4,6 +4,7 @@ import DAOs.CourseDAO;
 import DAOs.ProfessorDAO;
 import DAOs.StudentDAO;
 import Entities.Course;
+import Entities.Enum.LetterGrades;
 import Entities.Enum.WeekDays;
 import Entities.Professor;
 import Entities.Student;
@@ -18,6 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 // TODO: Veritabanından students enrolled almak için ek DAO metotları gerekli
 
@@ -131,6 +133,7 @@ public class ProfessorPanel extends JFrame {
 
         openCourseButton.addActionListener(e -> {
             Course selectedCourse = (Course) courseComboBox.getSelectedItem();
+
             if (selectedCourse == null) {
                 JOptionPane.showMessageDialog(this, "No course selected.");
                 return;
@@ -141,10 +144,11 @@ public class ProfessorPanel extends JFrame {
             try {
                 List<Student> enrolledStudents = studentDAO.getStudentsEnrolledInCourse(selectedCourse.getCourseId());
                 for (Student student : enrolledStudents) {
+                    LetterGrades grades = studentDAO.getLetterGradeByIds(student.getUserID(),selectedCourse.getCourseId());
                     studentsTableModel.addRow(new Object[]{
                             student.getUserID(),
                             student.getUserName(),
-                            student.viewLetterGrade(selectedCourse)
+                            grades
                     });
                 }
             } catch (SQLException ex) {
@@ -204,6 +208,7 @@ public class ProfessorPanel extends JFrame {
 
         assignGradeButton.addActionListener(e -> {
             int selectedRow = studentsTable.getSelectedRow();
+            Course selectedCourse = (Course) courseComboBox.getSelectedItem();
             if (selectedRow < 0) {
                 JOptionPane.showMessageDialog(this, "Select a student from the table first.");
                 return;
@@ -214,8 +219,15 @@ public class ProfessorPanel extends JFrame {
                 return;
             }
 
+            int studentId = (int) studentsTable.getValueAt(selectedRow,0);
+            int courseId = selectedCourse.getCourseId();
+
             // TODO: DAO logic to assign grade in Enrollment_Table
-            // studentDAO.assignGrade(studentId, courseId, grade);
+            try {
+                studentDAO.assignGrade(studentId, courseId, grade);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
 
             studentsTableModel.setValueAt(grade.toUpperCase(), selectedRow, 2);
             JOptionPane.showMessageDialog(this, "Grade assigned successfully.");
