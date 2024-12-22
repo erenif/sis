@@ -43,12 +43,12 @@ public class StudentDAO extends DAOs.AbstractDB {
 
     public void addStudent(Student student) throws SQLException {
         String query = "INSERT INTO Student_Table (student_id, student_name, password, gpa, available_credits) VALUES (?, ?, ?, ?, ?)";
-        executeUpdate(query, student.getUserID(), student.getUserName(), "default_password", student.getGpa(), student.getAvailableCredits());
+        executeUpdate(query, student.getUserID(), student.getUserName(), student.getPassword(), student.getGpa(), student.getAvailableCredits());
     }
 
     public void updateStudent(Student student) throws SQLException {
-        String query = "UPDATE Student_Table SET student_name = ?, gpa = ?, available_credits = ? WHERE student_id = ?";
-        executeUpdate(query, student.getUserName(), student.getGpa(), student.getAvailableCredits(), student.getUserID());
+        String query = "UPDATE Student_Table SET student_name = ?, password = ?, gpa = ?, available_credits = ? WHERE student_id = ?";
+        executeUpdate(query, student.getUserName(), student.getPassword(), student.getGpa(), student.getAvailableCredits(), student.getUserID());
     }
 
     public void deleteStudent(int studentId) throws SQLException {

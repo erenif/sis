@@ -92,7 +92,7 @@ public class LoginPanel extends JPanel {
                 try {
                     if (role.equals("Admin")) {
                         if ("admin".equals(username) && "admin123".equals(password)) {
-                            openAdminPanel();
+                            openAdminPanel(connection);
                         } else {
                             JOptionPane.showMessageDialog(null, "Login failed. Invalid admin credentials.");
                         }
@@ -127,9 +127,9 @@ public class LoginPanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 
-    private void openAdminPanel() {
+    private void openAdminPanel(Connection connection) {
         parentFrame.dispose();
-        new AdminPanel(studentDAO, professorDAO, courseDAO);
+        new AdminPanel(studentDAO, professorDAO, courseDAO, connection);
     }
 
 

@@ -6,13 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Student extends User{
+    private String password;
     private ArrayList<Course> coursesEnrolled;
     private double gpa;
     private int availableCredits;
     private HashMap<Course, LetterGrades> courseLetterGradesHashMap;
 
-    public Student(int userID, String UserName) {
+    public Student(int userID, String UserName, String password) {
         super(userID, UserName);
+        this.password = password;
         this.coursesEnrolled = new ArrayList<>();
         this.courseLetterGradesHashMap = new HashMap<>();
         this.gpa = 0.0;
@@ -79,6 +81,14 @@ public class Student extends User{
         } else {
             System.out.println("Student has not enrolled into the specified course");
         }
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public LetterGrades viewLetterGrade(Course course) {
