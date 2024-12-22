@@ -61,8 +61,17 @@ public class AdminPanel extends JFrame {
         studentsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Students", studentsPanel);
 
-        studentsTableModel = new DefaultTableModel(new Object[]{"Student ID", "Student Name", "GPA", "Available Credits"}, 0);
+        studentsTableModel = new DefaultTableModel(
+                new Object[]{"Student ID", "Student Name", "GPA", "Available Credits"},
+                0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tablonun düzenlenemez olmasını sağlıyor
+            }
+        };
         studentsTable = new JTable(studentsTableModel);
+
         studentsPanel.add(new JScrollPane(studentsTable), BorderLayout.CENTER);
 
         JPanel studentButtonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
