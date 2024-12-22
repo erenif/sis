@@ -103,6 +103,12 @@ public class LoginPanel extends JPanel {
                     return;
                 }
 
+                if (password.length() < 8 || !password.matches(".*[A-Z].*") || !password.matches(".*\\d.*")) {
+                    JOptionPane.showMessageDialog(null, "Password must be at least 8 characters long, include a capital letter, and a number.",
+                            "Weak Password", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
 
                 try {
                     if (role.equals("Admin")) {
