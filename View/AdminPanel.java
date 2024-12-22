@@ -88,7 +88,12 @@ public class AdminPanel extends JFrame {
         professorsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Professors", professorsPanel);
 
-        professorsTableModel = new DefaultTableModel(new Object[]{"Professor ID", "Professor Name"}, 0);
+        professorsTableModel = new DefaultTableModel(new Object[]{"Professor ID", "Professor Name"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tablonun düzenlenemez olmasını sağlıyor
+            }
+        };;
         professorsTable = new JTable(professorsTableModel);
         professorsPanel.add(new JScrollPane(professorsTable), BorderLayout.CENTER);
 
@@ -108,7 +113,12 @@ public class AdminPanel extends JFrame {
 
         coursesTableModel = new DefaultTableModel(
                 new Object[]{"Course ID", "Name", "Quota", "Credits", "Start", "End", "Day", "Syllabus"}, 0
-        );
+        ){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tablonun düzenlenemez olmasını sağlıyor
+            }
+        };;
         coursesTable = new JTable(coursesTableModel);
         coursesPanel.add(new JScrollPane(coursesTable), BorderLayout.CENTER);
 

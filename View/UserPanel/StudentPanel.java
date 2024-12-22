@@ -153,14 +153,24 @@ public class StudentPanel extends JFrame {
         JPanel enrolledPanel = new JPanel(new BorderLayout(5,5));
         enrolledPanel.setBorder(new EmptyBorder(5,5,5,5));
         enrolledPanel.add(new JLabel("Enrolled Courses:"), BorderLayout.NORTH);
-        enrolledCoursesTableModel = new DefaultTableModel(new Object[]{"Course ID", "Course Name", "Day", "Time", "Credits"}, 0);
+        enrolledCoursesTableModel = new DefaultTableModel(new Object[]{"Course ID", "Course Name", "Day", "Time", "Credits"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tablonun düzenlenemez olmasını sağlıyor
+            }
+        };
         enrolledCoursesTable = new JTable(enrolledCoursesTableModel);
         enrolledPanel.add(new JScrollPane(enrolledCoursesTable), BorderLayout.CENTER);
 
         JPanel availablePanel = new JPanel(new BorderLayout(5,5));
         availablePanel.setBorder(new EmptyBorder(5,5,5,5));
         availablePanel.add(new JLabel("Available Courses:"), BorderLayout.NORTH);
-        availableCoursesTableModel = new DefaultTableModel(new Object[]{"Course ID", "Course Name", "Quota", "Day", "Time", "Credits"}, 0);
+        availableCoursesTableModel = new DefaultTableModel(new Object[]{"Course ID", "Course Name", "Quota", "Day", "Time", "Credits"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tablonun düzenlenemez olmasını sağlıyor
+            }
+        };
         availableCoursesTable = new JTable(availableCoursesTableModel);
         availablePanel.add(new JScrollPane(availableCoursesTable), BorderLayout.CENTER);
 

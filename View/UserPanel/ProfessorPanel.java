@@ -109,7 +109,12 @@ public class ProfessorPanel extends JFrame {
         enrolledLabel.setFont(new Font("Arial", Font.BOLD, 14));
         studentsPanel.add(enrolledLabel, BorderLayout.NORTH);
 
-        studentsTableModel = new DefaultTableModel(new Object[]{"Student ID", "Student Name", "Current Grade"}, 0);
+        studentsTableModel = new DefaultTableModel(new Object[]{"Student ID", "Student Name", "Current Grade"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tablonun düzenlenemez olmasını sağlıyor
+            }
+        };
         studentsTable = new JTable(studentsTableModel);
         studentsPanel.add(new JScrollPane(studentsTable), BorderLayout.CENTER);
 
