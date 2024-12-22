@@ -54,7 +54,6 @@ public class AdminPanel extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // TabbedPane for Students, Professors, Courses
         JTabbedPane tabbedPane = new JTabbedPane();
 
         // === Students Tab ===
