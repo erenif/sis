@@ -61,6 +61,9 @@ public class LoginPanel extends JPanel {
         userDataPanel.add(usernameField);
         userDataPanel.add(passwordLabel);
         userDataPanel.add(passwordField);
+        JCheckBox showPassword = new JCheckBox("Show Password");
+        showPassword.addActionListener(e -> passwordField.setEchoChar(showPassword.isSelected() ? '\0' : '*'));
+        userDataPanel.add(showPassword);
         userDataPanel.setOpaque(false);
         userDataPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
         userPanel.add(userDataPanel);
