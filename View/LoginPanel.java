@@ -99,14 +99,14 @@ public class LoginPanel extends JPanel {
                     } else if (role.equals("Professor")) {
                         Professor professor = professorDAO.verifyProfessorCredentials(username, password);
                         if (professor != null) {
-                            openProfessorPanel(professor);
+                            openProfessorPanel(professor,connection);
                         } else {
                             JOptionPane.showMessageDialog(null, "Login failed. Invalid professor credentials.");
                         }
                     } else if (role.equals("Student")) {
                         Student student = studentDAO.verifyStudentCredentials(username, password);
                         if (student != null) {
-                            openStudentPanel(student);
+                            openStudentPanel(student,connection);
                         } else {
                             JOptionPane.showMessageDialog(null, "Login failed. Invalid student credentials.");
                         }
@@ -133,13 +133,13 @@ public class LoginPanel extends JPanel {
     }
 
 
-    private void openProfessorPanel(Professor professor) {
+    private void openProfessorPanel(Professor professor, Connection connection) {
         parentFrame.dispose();
-        new ProfessorPanel(professor, studentDAO, courseDAO,professorDAO);
+        new ProfessorPanel(professor, studentDAO, courseDAO,professorDAO, connection);
     }
 
-    private void openStudentPanel(Student student) {
+    private void openStudentPanel(Student student, Connection connection) {
         parentFrame.dispose();
-        new StudentPanel(student, studentDAO, courseDAO);
+        new StudentPanel(student, studentDAO, courseDAO, connection);
     }
 }

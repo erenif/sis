@@ -5,6 +5,7 @@ import DAOs.StudentDAO;
 import Entities.Course;
 import Entities.Student;
 import Utils.DatabaseConnection;
+import View.LoginPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -27,6 +28,8 @@ public class StudentPanel extends JFrame {
     private DefaultTableModel availableCoursesTableModel;
     private JButton addCourseButton;
     private JButton dropCourseButton;
+    private JButton logoutButton;
+
 
     private JTable scheduleTable;
     private DefaultTableModel scheduleTableModel;
@@ -34,7 +37,7 @@ public class StudentPanel extends JFrame {
     private JLabel gpaLabel;
     private JButton calculateGPAButton;
 
-    public StudentPanel(Student student, StudentDAO studentDAO, CourseDAO courseDAO) {
+    public StudentPanel(Student student, StudentDAO studentDAO, CourseDAO courseDAO, Connection connection) {
         this.student = student;
         this.studentDAO = studentDAO;
         this.courseDAO = courseDAO;
@@ -49,7 +52,11 @@ public class StudentPanel extends JFrame {
         JLabel welcomeLabel = new JLabel("Welcome, " + student.getUserName() + "!");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(welcomeLabel);
+
         add(topPanel, BorderLayout.NORTH);
+
+        logoutButton = new JButton("Logout");
+        topPanel.add(logoutButton, BorderLayout.EAST);
 
         tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
@@ -59,6 +66,29 @@ public class StudentPanel extends JFrame {
         setupGpaTab();
 
         loadDataFromDatabase();
+
+        logoutButton.addActionListener(e -> {
+            // Close this AdminPanel
+            dispose();
+            JFrame frame = new JFrame("Login");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(600, 300);
+            frame.setLocationRelativeTo(null);
+            frame.add(new LoginPanel(frame, connection));
+            frame.setVisible(true);
+
+            // Show the LoginPanel again
+            JFrame loginFrame = new JFrame("Login");
+            loginFrame.setSize(600, 400);
+            loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // Create a new LoginPanel, passing the same connection, if needed
+            LoginPanel loginPanel = new LoginPanel(loginFrame, connection);
+            loginFrame.add(loginPanel);
+
+            loginFrame.setLocationRelativeTo(null);
+            loginFrame.setVisible(true);
+        });
 
         addCourseButton.addActionListener(e -> {
             final int selectedRow = availableCoursesTable.getSelectedRow();

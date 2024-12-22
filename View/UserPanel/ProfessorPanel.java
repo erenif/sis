@@ -39,7 +39,7 @@ public class ProfessorPanel extends JFrame {
     private JTextField gradeField;
     private DefaultTableModel studentsTableModel;
 
-    public ProfessorPanel(Professor professor, StudentDAO studentDAO, CourseDAO courseDAO, ProfessorDAO professorDAO) {
+    public ProfessorPanel(Professor professor, StudentDAO studentDAO, CourseDAO courseDAO, ProfessorDAO professorDAO, Connection connection) {
         this.professor = professor;
         this.studentDAO = studentDAO;
         this.courseDAO = courseDAO;
@@ -96,9 +96,9 @@ public class ProfessorPanel extends JFrame {
         courseActionsPanel.add(editCourseButton);
         courseActionsPanel.add(deleteCourseButton);
         courseActionsPanel.add(createCourseButton);
+        topPanel.add(logoutButton,BorderLayout.EAST);
         coursePanel.add(courseActionsPanel, BorderLayout.SOUTH);
 
-        topPanel.add(logoutButton,BorderLayout.EAST);
 
 
         mainSplit.setLeftComponent(coursePanel);
@@ -283,6 +283,26 @@ public class ProfessorPanel extends JFrame {
                     throw new RuntimeException(ex);
                 }
             }
+        });
+
+        logoutButton.addActionListener(e -> {
+            dispose();
+            JFrame frame = new JFrame("Login");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(600, 300);
+            frame.setLocationRelativeTo(null);
+            frame.add(new LoginPanel(frame, connection));
+            frame.setVisible(true);
+
+            JFrame loginFrame = new JFrame("Login");
+            loginFrame.setSize(600, 400);
+            loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            LoginPanel loginPanel = new LoginPanel(loginFrame, connection);
+            loginFrame.add(loginPanel);
+
+            loginFrame.setLocationRelativeTo(null);
+            loginFrame.setVisible(true);
         });
         setLocationRelativeTo(null);
         setVisible(true);
